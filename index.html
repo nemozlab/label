@@ -42,13 +42,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .fi{display:flex;flex-direction:column;gap:5px}
 .fi.full{grid-column:1/-1}
 .fi label{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
-.fi input,.fi textarea{
-  padding:9px 12px;
-  border:1.5px solid var(--border);
-  border-radius:7px;
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:13px;
-}
+.fi input,.fi textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:13px}
 .fi input:focus,.fi textarea:focus{outline:none;border-color:var(--accent)}
 .fi textarea{line-height:1.4;resize:vertical;min-height:68px}
 .fi input::placeholder{color:#c0c8d4}
@@ -73,7 +67,17 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .pdf-bar{background:var(--accent);height:100%;border-radius:99px;transition:width .3s;width:0%}
 .pdf-msg{font-size:12px;color:var(--muted)}
 
-/* LABEL 100×100mm */
+/* 사용방법 모달 */
+#help-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:1000}
+#help-modal.show{display:flex}
+.help-box{background:#fff;border-radius:12px;padding:32px;max-width:640px;width:92%;max-height:92vh;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.help-box h2{font-size:20px;font-weight:900;margin-bottom:24px;text-align:center}
+.help-box h3{font-size:15px;font-weight:700;margin:28px 0 12px;color:#276749}
+.help-box ol{line-height:1.7;padding-left:20px}
+.help-box li{margin-bottom:10px}
+.help-box p{font-size:12px;color:#666;margin-top:8px}
+
+/* LABEL */
 .lbl{width:100mm;height:100mm;background:#fff;font-family:'Noto Sans JP',sans-serif;display:flex;flex-direction:column;border:1pt solid #111}
 .lh{display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
 .lh-t{font-size:8pt;font-weight:900;color:#111;letter-spacing:.3pt}
@@ -81,10 +85,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;justify-content:space-evenly}
 .lr{display:flex;align-items:center}
 .lk{font-size:8pt;font-weight:700;color:#111;min-width:23mm;flex-shrink:0;line-height:1.5}
-.lv{font-size:8pt;font-weight:700;color:#111;line-height:1.45;flex:1;white-space:pre-line} /* ← 여러 줄 지원 핵심 */
+.lv{font-size:8pt;font-weight:700;color:#111;line-height:1.45;flex:1;white-space:pre-line}
 .lv.mc{display:flex;flex-direction:column;gap:0}
-
-/* 하단 아이콘 */
 .li{flex-shrink:0;padding:1.5mm 3mm;display:flex;align-items:center;justify-content:center}
 .li img{height:9mm;width:auto;display:block}
 
@@ -101,6 +103,36 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 </head>
 <body>
 
+<!-- 사용방법 모달 -->
+<div id="help-modal" onclick="if(event.target.id==='help-modal')hideHelp()">
+  <div class="help-box" onclick="event.stopImmediatePropagation()">
+    <h2>📖 Nemoz Label Generator 사용 방법</h2>
+    
+    <h3>① 박스 번호가 존재하는 경우 (다품종 / 일반 납품서)</h3>
+    <ol>
+      <li>Google 시트에서 <strong>납품서 탭</strong>의 전체 주소를 복사합니다.</li>
+      <li>① 구글 시트 URL 입력 칸에 붙여넣기 → <strong>불러오기</strong> 클릭</li>
+      <li>② 라벨 공통 정보가 자동 채워집니다 (상품명 여러 줄도 OK)</li>
+      <li>③ 미리보기 확인 후 우측 상단 <strong>⬇ PDF 다운로드</strong></li>
+      <li>PDF를 <strong>100mm × 100mm 실제 크기</strong>로 인쇄</li>
+    </ol>
+
+    <h3>② 공통 라벨인 경우 (No. of Boxes 컬럼 있는 경우)</h3>
+    <ol>
+      <li>Google 시트에서 <strong>공통 라벨용 탭</strong>의 전체 주소를 복사합니다.</li>
+      <li>① 구글 시트 URL 입력 칸에 붙여넣기 → <strong>불러오기</strong> 클릭</li>
+      <li>③ 미리보기에서 “共通ラベル”과 No. of Boxes 수만큼 라벨이 생성된 것을 확인</li>
+      <li><strong>⬇ PDF 다운로드</strong></li>
+      <li>PDF를 <strong>100mm × 100mm 실제 크기</strong>로 인쇄</li>
+    </ol>
+
+    <div style="text-align:center;margin-top:32px">
+      <button class="btn btn-d" onclick="hideHelp()" style="padding:10px 28px">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF 진행 모달 -->
 <div id="pdf-progress">
   <div class="pdf-box">
     <h3>PDF 생성 중...</h3>
@@ -113,14 +145,14 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 <div class="hdr">
   <div class="hdr-logo">Nemoz Label Generator</div>
   <div style="display:flex;gap:8px;align-items:center">
-    <span id="hc" style="font-size:11px;color:rgba(255,255,255,.4)"></span>
+    <button class="btn btn-g" onclick="showHelp()">📖 사용방법</button>
     <button class="btn btn-g" onclick="location.reload()">↺ 초기화</button>
     <button class="btn btn-pdf" id="bpdf" onclick="doDownloadPDF()" disabled>⬇ PDF 다운로드</button>
   </div>
 </div>
 
 <div class="wrap">
-
+  <!-- ① URL 입력 -->
   <div class="card">
     <div class="ch"><span class="ct">① 구글 시트 URL 입력</span></div>
     <div class="cb">
@@ -128,13 +160,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
         <input type="text" id="su" placeholder="납품서 탭 URL 붙여넣기" onkeydown="if(event.key==='Enter')go()">
         <button class="btn btn-p" onclick="go()">불러오기</button>
       </div>
-      <div class="uh">
-        시트 URL 붙여넣기 (공유: 링크 있는 모든 사용자 → 뷰어 설정 필요)
-      </div>
+      <div class="uh">시트 URL 붙여넣기 (링크 있는 모든 사용자 → 뷰어 설정 필요)</div>
       <div id="sa"></div>
     </div>
   </div>
 
+  <!-- ② 공통 정보 -->
   <div class="card">
     <div class="ch"><span class="ct">② 라벨 공통 정보 <span style="font-weight:400;color:var(--muted)">— 시트 자동 입력 · 직접 수정 가능</span></span></div>
     <div class="cb">
@@ -152,6 +183,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
     </div>
   </div>
 
+  <!-- ③ 미리보기 -->
   <div class="card">
     <div class="ch">
       <span class="ct">③ 라벨 스티커 미리보기 <span style="font-weight:400;color:var(--muted)">— 실제 인쇄 결과</span></span>
@@ -159,7 +191,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
     </div>
     <div id="sp"><div class="empty"><div class="ei">🏷</div><div>시트 URL을 입력해주세요</div></div></div>
   </div>
-
 </div>
 </div>
 
@@ -167,204 +198,242 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 
 <script>
 const {jsPDF} = window.jspdf;
-let boxes=[];
-const gv=id=>document.getElementById(id).value.trim();
-const sh=()=>({name:gv('fn'),office:gv('fo'),sku:gv('fs'),jan:gv('fj'),origin:gv('fr')||'MADE IN KOREA',total:boxes.length});
+let boxes = [];
 
-const ICON_IMG_URL='https://nemozlab.github.io/label/images/label_icon.png';
-const PX=[u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`];
+const gv = id => document.getElementById(id).value.trim();
+const sh = () => ({name: gv('fn'), office: gv('fo'), sku: gv('fs'), jan: gv('fj'), origin: gv('fr') || 'MADE IN KOREA', total: boxes.length});
 
-async function fc(u){try{const r=await fetch(u);if(r.ok)return r}catch(e){}for(const p of PX){try{const r=await fetch(p(u));if(r.ok)return r}catch(e){}}throw new Error('시트 접근 실패 — 방법 A를 사용해주세요.')}
-function ids(url){return{id:(url.match(/\/d\/([a-zA-Z0-9_-]+)/)||[])[1]||null,gid:(url.match(/[?&#]gid=(\d+)/)||[])[1]||null}}
+const ICON_IMG_URL = 'https://nemozlab.github.io/label/images/label_icon.png';
+const PX = [
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`
+];
 
-async function go(){
-  const url=gv('su');if(!url){alert('URL 입력');return}
-  st('L','시트 불러오는 중...');
-  try{
-    const{id,gid}=ids(url);if(!id)throw new Error('시트 ID 없음');
-    let bt=null,it=null;
-    if(url.includes('/pub')&&url.includes('output=csv')){
-      const r=await fetch(url);if(!r.ok)throw new Error(`HTTP ${r.status}`);
-      bt=await r.text();
-      try{const r2=await fc(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('라벨공통정보')}`);it=await r2.text();}catch(e){}
-    }else{
-      const[r1,r2]=await Promise.all([
-        fc(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv${gid?`&gid=${gid}`:''}`),
-        fc(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('라벨공통정보')}`).catch(()=>null)
+async function fc(u) {
+  try { const r = await fetch(u); if (r.ok) return r; } catch(e) {}
+  for (const p of PX) {
+    try { const r = await fetch(p(u)); if (r.ok) return r; } catch(e) {}
+  }
+  throw new Error('시트 접근 실패 — 방법 A를 사용해주세요.');
+}
+
+function ids(url) {
+  return {
+    id: (url.match(/\/d\/([a-zA-Z0-9_-]+)/) || [])[1] || null,
+    gid: (url.match(/[?&#]gid=(\d+)/) || [])[1] || null
+  };
+}
+
+async function go() {
+  const url = gv('su'); if (!url) { alert('URL 입력'); return; }
+  st('L', '시트 불러오는 중...');
+  try {
+    const {id, gid} = ids(url); if (!id) throw new Error('시트 ID 없음');
+    let bt = null, it = null;
+    if (url.includes('/pub') && url.includes('output=csv')) {
+      const r = await fetch(url); if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      bt = await r.text();
+      try {
+        const r2 = await fc(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('라벨공통정보')}`);
+        it = await r2.text();
+      } catch(e) {}
+    } else {
+      const [r1, r2] = await Promise.all([
+        fc(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv${gid ? `&gid=${gid}` : ''}`),
+        fc(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('라벨공통정보')}`).catch(() => null)
       ]);
-      if(!r1||!r1.ok)throw new Error('시트 읽기 실패');
-      bt=await r1.text();
-      if(r2&&r2.ok)it=await r2.text();
+      if (!r1 || !r1.ok) throw new Error('시트 읽기 실패');
+      bt = await r1.text();
+      if (r2 && r2.ok) it = await r2.text();
     }
-    boxes=parseCSV(bt);
-    if(!boxes.length)throw new Error('박스 데이터 없음 — 납품서 탭 확인');
-    if(it)fillInfo(it);
+    boxes = parseCSV(bt);
+    if (!boxes.length) throw new Error('박스 데이터 없음 — 납품서 탭 확인');
+    if (it) fillInfo(it);
     render();
-    st('D',`✅ ${boxes.length}개 박스${it?' + 공통정보':''} 완료`);
-    document.getElementById('bpdf').disabled=false;
-    document.getElementById('hc').textContent=`${boxes.length} BOXES`;
-    const isCommonMode=boxes.length>0&&boxes[0].common;
-    document.getElementById('bb').textContent=isCommonMode?`공통 라벨 ${boxes.length}장 (동일 내용)`:`총 ${boxes.length}장`;
-  }catch(e){st('E','❌ '+e.message)}
+    st('D', `✅ ${boxes.length}개 박스${it ? ' + 공통정보' : ''} 완료`);
+    document.getElementById('bpdf').disabled = false;
+    const isCommonMode = boxes.length > 0 && boxes[0].common;
+    document.getElementById('bb').textContent = isCommonMode ? `공통 라벨 ${boxes.length}장 (동일 내용)` : `총 ${boxes.length}장`;
+  } catch(e) {
+    st('E', '❌ ' + e.message);
+  }
 }
 
-function pl(line){const res=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++}else q=!q}else if(ch===','&&!q){res.push(c.trim());c=''}else c+=ch;}res.push(c.trim());return res}
-
-function parseFullCSV(text){
-  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const rows=[];let row=[],c='',q=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(ch==='"'){if(q&&text[i+1]==='"'){c+='"';i++}else q=!q}
-    else if(ch===','&&!q){row.push(c);c=''}
-    else if(ch==='\n'&&!q){row.push(c);rows.push(row);row=[];c=''}
-    else c+=ch;
+function parseFullCSV(text) {
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const rows = []; let row = [], c = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (q && text[i + 1] === '"') { c += '"'; i++; }
+      else q = !q;
+    } else if (ch === ',' && !q) {
+      row.push(c); c = '';
+    } else if (ch === '\n' && !q) {
+      row.push(c); rows.push(row); row = []; c = '';
+    } else {
+      c += ch;
+    }
   }
-  if(c||row.length){row.push(c);rows.push(row)}
-  return rows.map(r=>r.map(v=>v.trim()));
+  if (c || row.length) { row.push(c); rows.push(row); }
+  return rows.map(r => r.map(v => v.trim()));
 }
 
-function cn(s){if(!s)return null;const ns=(s+'').replace(/[^0-9]/g,' ').trim().split(/\s+/).filter(Boolean).map(Number).filter(n=>!isNaN(n));return ns.length?ns[ns.length-1]:null}
+function cn(s) {
+  if (!s) return null;
+  const ns = (s + '').replace(/[^0-9]/g, ' ').trim().split(/\s+/).filter(Boolean).map(Number).filter(n => !isNaN(n));
+  return ns.length ? ns[ns.length - 1] : null;
+}
 
-function parseCSV(text){
-  const rows=parseFullCSV(text);
-  let hi=-1,cA=-1,cB=-1,cNB=-1,cT=-1,cM=-1,cS=-1;
-  for(let i=0;i<rows.length;i++){
-    const r=rows[i];
-    const maxCol=Math.min(r.length,13);
-    let _cA=-1,_cB=-1,_cNB=-1,_cT=-1,_cM=-1,_cS=-1;
-    for(let j=0;j<maxCol;j++){
-      const v=(r[j]||'').toLowerCase().trim();
-      if((v==='box no'||v.includes('box no'))&&!v.includes('of'))_cB=j;
-      if(v.includes('no. of box')||v.includes('no of box')||v.includes('박스 개수')||v.includes('상자 개수'))_cNB=j;
-      if(v.includes('総数量')||v.includes('총수량'))_cT=j;
-      if(v.includes('本品')||v.includes('본품'))_cM=j;
-      if(v.includes('予備')||v.includes('예비'))_cS=j;
-      if(v.includes('アーティスト')||v.includes('商品名'))_cA=j;
+function parseCSV(text) {
+  const rows = parseFullCSV(text);
+  let hi = -1, cA = -1, cB = -1, cNB = -1, cT = -1, cM = -1, cS = -1;
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    const maxCol = Math.min(r.length, 13);
+    let _cA = -1, _cB = -1, _cNB = -1, _cT = -1, _cM = -1, _cS = -1;
+    for (let j = 0; j < maxCol; j++) {
+      const v = (r[j] || '').toLowerCase().trim();
+      if ((v === 'box no' || v.includes('box no')) && !v.includes('of')) _cB = j;
+      if (v.includes('no. of box') || v.includes('no of box') || v.includes('박스 개수') || v.includes('상자 개수')) _cNB = j;
+      if (v.includes('総数量') || v.includes('총수량')) _cT = j;
+      if (v.includes('本品') || v.includes('본품')) _cM = j;
+      if (v.includes('予備') || v.includes('예비')) _cS = j;
+      if (v.includes('アーティスト') || v.includes('商品名')) _cA = j;
     }
-    if(_cT>-1&&(_cB>-1||_cNB>-1)){
-      hi=i;cA=_cA;cB=_cB;cNB=_cNB;cT=_cT;cM=_cM;cS=_cS;break;
+    if (_cT > -1 && (_cB > -1 || _cNB > -1)) {
+      hi = i; cA = _cA; cB = _cB; cNB = _cNB; cT = _cT; cM = _cM; cS = _cS;
+      break;
     }
   }
-  if(hi===-1)return[];
+  if (hi === -1) return [];
 
-  const isCommon=cNB>-1&&cB===-1;
-  if(cA===-1)cA=Math.max(0,(cB>-1?cB:cNB)-2);
-  if(cM===-1)cM=cT+1;
-  if(cS===-1)cS=cT+2;
+  const isCommon = cNB > -1 && cB === -1;
+  if (cA === -1) cA = Math.max(0, (cB > -1 ? cB : cNB) - 2);
+  if (cM === -1) cM = cT + 1;
+  if (cS === -1) cS = cT + 2;
 
-  const bxs=[];let ln=null;
-  for(let i=hi+1;i<rows.length;i++){
-    const r=rows[i];
-    if(!r||r.every(c=>!c))continue;
-    const aR=(r[cA]||'').trim();
-    const bRaw=isCommon?(r[cNB]||'').trim():(r[cB]||'').trim();
-    const tR=(r[cT]||'').trim(),mR=(r[cM]||'').trim(),sR=(r[cS]||'').trim();
-    if(aR.toLowerCase()==='total'||aR==='합계')break;
-    const boxCount=bRaw?cn(bRaw):null;
-    const total=tR?cn(tR):null,main=mR?cn(mR):null,spare=sR?cn(sR):null;
-    if(!boxCount&&!aR)continue;
+  const bxs = []; let ln = null;
+  for (let i = hi + 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (!r || r.every(c => !c)) continue;
+    const aR = (r[cA] || '').trim();
+    const bRaw = isCommon ? (r[cNB] || '').trim() : (r[cB] || '').trim();
+    const tR = (r[cT] || '').trim(), mR = (r[cM] || '').trim(), sR = (r[cS] || '').trim();
+    if (aR.toLowerCase() === 'total' || aR === '합계') break;
+    const boxCount = bRaw ? cn(bRaw) : null;
+    const total = tR ? cn(tR) : null, main = mR ? cn(mR) : null, spare = sR ? cn(sR) : null;
+    if (!boxCount && !aR) continue;
 
-    if(isCommon){
-      const count=boxCount||1;
-      for(let k=0;k<count;k++){
-        bxs.push({no:null,single:true,common:true,count,a:aR,t:total||0,m:main,s:spare||0});
+    if (isCommon) {
+      const count = boxCount || 1;
+      for (let k = 0; k < count; k++) {
+        bxs.push({no: null, single: true, common: true, count, a: aR, t: total || 0, m: main, s: spare || 0});
       }
-    }else{
-      const no=boxCount;
-      if(!no&&!aR)continue;
-      if(no){
-        const ex=bxs.find(b=>b.no===no);
-        if(ex){if(ex.single){ex.single=false;ex.rows=[{a:ex.a,m:ex.m,s:ex.s}];delete ex.a;delete ex.m;delete ex.s;}ex.rows.push({a:aR,m:main,s:spare||0});}
-        else{bxs.push({no,single:true,a:aR,t:total||0,m:main,s:spare||0});ln=no;}
-      }else if(aR&&ln!==null){
-        const ex=bxs.find(b=>b.no===ln);
-        if(ex){if(ex.single){ex.single=false;ex.rows=[{a:ex.a,m:ex.m,s:ex.s}];delete ex.a;delete ex.m;delete ex.s;}ex.rows.push({a:aR,m:main,s:spare||0});}
+    } else {
+      const no = boxCount;
+      if (!no && !aR) continue;
+      if (no) {
+        const ex = bxs.find(b => b.no === no);
+        if (ex) {
+          if (ex.single) { ex.single = false; ex.rows = [{a: ex.a, m: ex.m, s: ex.s}]; delete ex.a; delete ex.m; delete ex.s; }
+          ex.rows.push({a: aR, m: main, s: spare || 0});
+        } else {
+          bxs.push({no, single: true, a: aR, t: total || 0, m: main, s: spare || 0});
+          ln = no;
+        }
+      } else if (aR && ln !== null) {
+        const ex = bxs.find(b => b.no === ln);
+        if (ex) {
+          if (ex.single) { ex.single = false; ex.rows = [{a: ex.a, m: ex.m, s: ex.s}]; delete ex.a; delete ex.m; delete ex.s; }
+          ex.rows.push({a: aR, m: main, s: spare || 0});
+        }
       }
     }
   }
   return bxs;
 }
 
-/* ←←← 여기서부터 수정된 부분 ←←← */
-function fillInfo(csvText){
-  if(!csvText) return;
+function fillInfo(csvText) {
+  if (!csvText) return;
   const rows = parseFullCSV(csvText);
   const map = {};
-  
   rows.forEach(r => {
-    if(r.length >= 2 && r[0]){
+    if (r.length >= 2 && r[0]) {
       const key = r[0].trim();
-      const value = String(r[1] || '');   // \n 그대로 유지
+      const value = String(r[1] || '');
       map[key] = value;
     }
   });
-
   const g = (...ks) => {
-    for(const k of ks){
-      for(const [mk, mv] of Object.entries(map)){
-        if(mk.includes(k) || k.includes(mk)) return mv;
+    for (const k of ks) {
+      for (const [mk, mv] of Object.entries(map)) {
+        if (mk.includes(k) || k.includes(mk)) return mv;
       }
     }
     return '';
   };
-
   const v = {
-    name: g('商品名','상품명'),
-    office: g('事務所','사무소','납품처'),
-    sku: g('品番','품번'),
-    jan: g('バーコード','바코드','JAN'),
-    origin: g('原産国','원산국')
+    name: g('商品名', '상품명'),
+    office: g('事務所', '사무소', '납품처'),
+    sku: g('品番', '품번'),
+    jan: g('バーコード', '바코드', 'JAN'),
+    origin: g('原産国', '원산국')
   };
-
-  if(v.name) document.getElementById('fn').value = v.name;
-  if(v.office) document.getElementById('fo').value = v.office;
-  if(v.sku) document.getElementById('fs').value = v.sku;
-  if(v.jan) document.getElementById('fj').value = v.jan;
-  if(v.origin) document.getElementById('fr').value = v.origin;
+  if (v.name) document.getElementById('fn').value = v.name;
+  if (v.office) document.getElementById('fo').value = v.office;
+  if (v.sku) document.getElementById('fs').value = v.sku;
+  if (v.jan) document.getElementById('fj').value = v.jan;
+  if (v.origin) document.getElementById('fr').value = v.origin;
 }
 
-function refresh(){if(boxes.length)render();const o=document.getElementById('ao');o.style.display='inline';setTimeout(()=>o.style.display='none',2500)}
+function refresh() {
+  if (boxes.length) render();
+  const o = document.getElementById('ao');
+  o.style.display = 'inline';
+  setTimeout(() => o.style.display = 'none', 2500);
+}
 
-function render(){
-  const s=sh();
-  const div=document.getElementById('sp');
-  let h='<div class="sg">';
-  boxes.forEach(b=>{
-    h+=`<div class="sw">
-      <div class="sn">${b.common?'共通ラベル '+(boxes.indexOf(b)+1)+' / '+boxes.length:'BOX '+String(b.no).padStart(2,'0')+' / '+boxes.length}</div>
-      <div class="ss"><div class="si">${lblHTML(b,s)}</div></div>
+function render() {
+  const s = sh();
+  const div = document.getElementById('sp');
+  let h = '<div class="sg">';
+  boxes.forEach(b => {
+    h += `<div class="sw">
+      <div class="sn">${b.common ? '共通ラベル ' + (boxes.indexOf(b) + 1) + ' / ' + boxes.length : 'BOX ' + String(b.no).padStart(2, '0') + ' / ' + boxes.length}</div>
+      <div class="ss"><div class="si">${lblHTML(b, s)}</div></div>
     </div>`;
   });
-  h+='</div>';
-  div.innerHTML=h;
+  h += '</div>';
+  div.innerHTML = h;
 }
 
-async function doDownloadPDF(){ /* 기존과 동일 (변경 없음) */ 
-  if(!boxes.length)return;
-  const s=sh();
-  const prog=document.getElementById('pdf-progress');
-  const bar=document.getElementById('pdf-bar');
-  const msg=document.getElementById('pdf-msg');
+async function doDownloadPDF() {
+  if (!boxes.length) return;
+  const s = sh();
+  const prog = document.getElementById('pdf-progress');
+  const bar = document.getElementById('pdf-bar');
+  const msg = document.getElementById('pdf-msg');
   prog.classList.add('show');
-  bar.style.width='0%';
+  bar.style.width = '0%';
 
-  const pdf=new jsPDF({unit:'mm',format:[100,100],orientation:'portrait'});
-  const wrap=document.createElement('div');
-  wrap.style.cssText="position:fixed;left:-9999px;top:0;width:378px;height:378px;overflow:hidden;background:#fff;font-family:'Noto Sans JP',sans-serif";
+  const pdf = new jsPDF({unit: 'mm', format: [100, 100], orientation: 'portrait'});
+  const wrap = document.createElement('div');
+  wrap.style.cssText = "position:fixed;left:-9999px;top:0;width:378px;height:378px;overflow:hidden;background:#fff;font-family:'Noto Sans JP',sans-serif";
   document.body.appendChild(wrap);
 
   await document.fonts.load("bold 8pt 'Noto Sans JP'");
 
-  async function imgToB64(url){
-    const urls=[url,...PX.map(p=>p(url))];
-    for(const u of urls){
-      try{
-        const r=await fetch(u);
-        if(!r.ok)continue;
-        const blob=await r.blob();
-        return await new Promise(res=>{const fr=new FileReader();fr.onload=e=>res(e.target.result);fr.readAsDataURL(blob);});
-      }catch(e){}
+  async function imgToB64(url) {
+    const urls = [url, ...PX.map(p => p(url))];
+    for (const u of urls) {
+      try {
+        const r = await fetch(u);
+        if (!r.ok) continue;
+        const blob = await r.blob();
+        return await new Promise(res => { const fr = new FileReader(); fr.onload = e => res(e.target.result); fr.readAsDataURL(blob); });
+      } catch(e) {}
     }
     return '';
   }
@@ -374,67 +443,66 @@ async function doDownloadPDF(){ /* 기존과 동일 (변경 없음) */
     imgToB64(ICON_IMG_URL)
   ]);
 
-  await new Promise(r=>setTimeout(r,100));
+  await new Promise(r => setTimeout(r, 100));
 
-  for(let i=0;i<boxes.length;i++){
-    const b=boxes[i];
-    bar.style.width=Math.round((i/boxes.length)*90)+'%';
-    msg.textContent=`BOX ${b.no} (${i+1}/${boxes.length})`;
+  for (let i = 0; i < boxes.length; i++) {
+    const b = boxes[i];
+    bar.style.width = Math.round((i / boxes.length) * 90) + '%';
+    msg.textContent = `BOX ${b.no || ''} (${i + 1}/${boxes.length})`;
 
-    wrap.innerHTML=lblHTML(b,s);
-    const lbl=wrap.querySelector('.lbl');
-    lbl.style.width='378px';
-    lbl.style.height='378px';
-    lbl.style.fontFamily="'Noto Sans JP',sans-serif";
-    const logoImg=lbl.querySelector('.lh-logo');
-    if(logoImg&&logoB64) logoImg.src=logoB64;
-    const iconImg=lbl.querySelector('.li img');
-    if(iconImg&&iconB64) iconImg.src=iconB64;
+    wrap.innerHTML = lblHTML(b, s);
+    const lbl = wrap.querySelector('.lbl');
+    lbl.style.width = '378px';
+    lbl.style.height = '378px';
+    lbl.style.fontFamily = "'Noto Sans JP',sans-serif";
+    const logoImg = lbl.querySelector('.lh-logo');
+    if (logoImg && logoB64) logoImg.src = logoB64;
+    const iconImg = lbl.querySelector('.li img');
+    if (iconImg && iconB64) iconImg.src = iconB64;
 
-    await new Promise(r=>setTimeout(r,80));
+    await new Promise(r => setTimeout(r, 80));
 
-    const canvas=await html2canvas(lbl,{
-      scale:2.5,
-      useCORS:true,
-      allowTaint:true,
-      backgroundColor:'#ffffff',
-      width:378,
-      height:378,
+    const canvas = await html2canvas(lbl, {
+      scale: 2.5,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      width: 378,
+      height: 378,
     });
 
-    const imgData=canvas.toDataURL('image/jpeg',0.75);
-    if(i>0) pdf.addPage([100,100],'p');
-    pdf.addImage(imgData,'JPEG',0,0,100,100,undefined,'FAST');
+    const imgData = canvas.toDataURL('image/jpeg', 0.75);
+    if (i > 0) pdf.addPage([100, 100], 'p');
+    pdf.addImage(imgData, 'JPEG', 0, 0, 100, 100, undefined, 'FAST');
   }
 
   document.body.removeChild(wrap);
-  bar.style.width='100%';
-  msg.textContent='저장 중...';
-  await new Promise(r=>setTimeout(r,200));
+  bar.style.width = '100%';
+  msg.textContent = '저장 중...';
+  await new Promise(r => setTimeout(r, 200));
   pdf.save('nemoz_stickers.pdf');
   prog.classList.remove('show');
 }
 
-/* LABEL HTML — 상품명 여러 줄 지원 */
-function lblHTML(b,s,forPdf=false){
-  const isCommon=!!b.common;
-  const no=isCommon?null:String(b.no).padStart(2,'0');
+function lblHTML(b, s) {
+  const isCommon = !!b.common;
+  const no = isCommon ? null : String(b.no).padStart(2, '0');
 
-  const aHtml=b.single
-    ?`<span class="lv">${b.a}</span>`
-    :`<div class="lv mc">${b.rows.map(r=>`<span>${r.a}</span>`).join('')}</div>`;
+  const aHtml = b.single
+    ? `<span class="lv">${b.a}</span>`
+    : `<div class="lv mc">${b.rows.map(r => `<span>${r.a}</span>`).join('')}</div>`;
 
-  const tHtml=`<span class="lv">${b.t} ea</span>`;
+  const tHtml = `<span class="lv">${b.t} ea</span>`;
 
-  const mHtml=b.single
-    ?`<span class="lv">${b.m!==null&&b.m!==undefined?b.m:0} ea</span>`
-    :`<div class="lv mc">${b.rows.map(r=>`<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i,'')} / ${r.m!==null&&r.m!==undefined?r.m:0} ea</span>`).join('')}</div>`;
+  const mHtml = b.single
+    ? `<span class="lv">${b.m !== null && b.m !== undefined ? b.m : 0} ea</span>`
+    : `<div class="lv mc">${b.rows.map(r => `<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i, '')} / ${r.m !== null && r.m !== undefined ? r.m : 0} ea</span>`).join('')}</div>`;
 
-  const spHtml=b.single
-    ?`<span class="lv">${b.s?b.s:0} ea</span>`
-    :`<div class="lv mc">${b.rows.map(r=>`<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i,'')} / ${r.s?r.s:0} ea</span>`).join('')}</div>`;
+  const spHtml = b.single
+    ? `<span class="lv">${b.s ? b.s : 0} ea</span>`
+    : `<div class="lv mc">${b.rows.map(r => `<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i, '')} / ${r.s ? r.s : 0} ea</span>`).join('')}</div>`;
 
-  const iconImg=`<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:10.8mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
+  const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:10.8mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
 
   return `<div class="lbl">
   <div class="lh">
@@ -443,14 +511,13 @@ function lblHTML(b,s,forPdf=false){
   </div>
   <div class="lb">
     ${isCommon
-      ?`<div class="lr"><span class="lk">No. of Boxes</span><span class="lv">${b.count} Box</span></div>`
-      :`<div class="lr"><span class="lk">Box No.</span><span class="lv">${no}</span></div>`}
+      ? `<div class="lr"><span class="lk">No. of Boxes</span><span class="lv">${b.count} Box</span></div>`
+      : `<div class="lr"><span class="lk">Box No.</span><span class="lv">${no}</span></div>`}
     <div class="lr"><span class="lk">アーティスト名</span>${aHtml}</div>
     <div class="lr"><span class="lk">総数量</span>${tHtml}</div>
     <div class="lr"><span class="lk">数量 (本品)</span>${mHtml}</div>
     <div class="lr"><span class="lk">数量 (予備)</span>${spHtml}</div>
     <div class="lr"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
-    <!-- 상품명 여러 줄 지원 -->
     <div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
     <div class="lr"><span class="lk">品番</span><span class="lv">${s.sku}</span></div>
     <div class="lr"><span class="lk">バーコード</span><span class="lv">${s.jan}</span></div>
@@ -460,11 +527,18 @@ function lblHTML(b,s,forPdf=false){
 </div>`;
 }
 
-function st(t,msg){
-  const el=document.getElementById('sa');
-  if(t==='L')el.innerHTML=`<div class="sb L"><div class="sp"></div>${msg}</div>`;
-  else if(t==='D')el.innerHTML=`<div class="sb D">${msg}</div>`;
-  else el.innerHTML=`<div class="sb E">${msg}</div>`;
+function st(t, msg) {
+  const el = document.getElementById('sa');
+  if (t === 'L') el.innerHTML = `<div class="sb L"><div class="sp"></div>${msg}</div>`;
+  else if (t === 'D') el.innerHTML = `<div class="sb D">${msg}</div>`;
+  else el.innerHTML = `<div class="sb E">${msg}</div>`;
+}
+
+function showHelp() {
+  document.getElementById('help-modal').classList.add('show');
+}
+function hideHelp() {
+  document.getElementById('help-modal').classList.remove('show');
 }
 </script>
 </body>
