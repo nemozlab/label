@@ -1,3 +1,4 @@
+<DOCUMENT filename="index.html">
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -41,41 +42,30 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .fi{display:flex;flex-direction:column;gap:5px}
 .fi.full{grid-column:1/-1}
 .fi label{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
-.fi input{padding:9px 12px;border:1.5px solid var(--border);border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:13px}
-.fi input:focus{outline:none;border-color:var(--accent)}
+.fi input,.fi textarea{
+  padding:9px 12px;
+  border:1.5px solid var(--border);
+  border-radius:7px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;
+}
+.fi input:focus,.fi textarea:focus{outline:none;border-color:var(--accent)}
+.fi textarea{line-height:1.4;resize:vertical;min-height:68px}
 .fi input::placeholder{color:#c0c8d4}
 .ar{margin-top:18px;display:flex;justify-content:flex-end;gap:10px;align-items:center}
 .ao{font-size:12px;color:#276749;font-weight:600;display:none}
 
-/* 미리보기 — 1열, 크게 */
-.sg{
-  display:flex;flex-direction:column;
-  align-items:center;
-  gap:32px;
-  padding:32px 20px;
-  background:#d8dbe5;
-}
+/* 미리보기 */
+.sg{display:flex;flex-direction:column;align-items:center;gap:32px;padding:32px 20px;background:#d8dbe5}
 .sw{display:flex;flex-direction:column;align-items:center;gap:8px}
 .sn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#666;letter-spacing:1px}
-/* 100mm × 100mm → 화면에서 420px × 420px (약 4배) */
-.ss{
-  box-shadow:0 4px 20px rgba(0,0,0,.22);
-  overflow:hidden;
-  width:378px;height:378px;
-}
-.si{
-  width:100mm;height:100mm;
-  transform:scale(1.0);
-  transform-origin:top left;
-}
+.ss{box-shadow:0 4px 20px rgba(0,0,0,.22);overflow:hidden;width:378px;height:378px}
+.si{width:100mm;height:100mm;transform:scale(1.0);transform-origin:top left}
 .empty{text-align:center;padding:48px 20px;color:var(--muted)}
 .ei{font-size:36px;margin-bottom:10px;opacity:.4}
 
 /* pdf progress */
-#pdf-progress{
-  position:fixed;inset:0;background:rgba(0,0,0,.6);
-  display:none;align-items:center;justify-content:center;z-index:999;
-}
+#pdf-progress{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:999}
 #pdf-progress.show{display:flex}
 .pdf-box{background:#fff;border-radius:12px;padding:28px 36px;text-align:center;min-width:260px}
 .pdf-box h3{font-size:15px;font-weight:700;margin-bottom:12px}
@@ -83,46 +73,20 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .pdf-bar{background:var(--accent);height:100%;border-radius:99px;transition:width .3s;width:0%}
 .pdf-msg{font-size:12px;color:var(--muted)}
 
-/* ═══════════════════════
-   LABEL 100×100mm
-═══════════════════════ */
-.lbl{
-  width:100mm;height:100mm;
-  background:#fff;
-  font-family:'Noto Sans JP',sans-serif;
-  display:flex;flex-direction:column;
-  border:1pt solid #111;
-}
-.lh{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:2.5mm 3.5mm;
-  border-bottom:1pt solid #111;
-  flex-shrink:0;
-}
+/* LABEL 100×100mm */
+.lbl{width:100mm;height:100mm;background:#fff;font-family:'Noto Sans JP',sans-serif;display:flex;flex-direction:column;border:1pt solid #111}
+.lh{display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
 .lh-t{font-size:8pt;font-weight:900;color:#111;letter-spacing:.3pt}
 .lh-logo{height:4.5mm;width:auto}
-.lb{
-  flex:1;min-height:0;
-  padding:0 3.5mm;
-  display:flex;flex-direction:column;
-  justify-content:space-evenly;
-}
-.lr{display:flex;align-items:center;}
+.lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;justify-content:space-evenly}
+.lr{display:flex;align-items:center}
 .lk{font-size:8pt;font-weight:700;color:#111;min-width:23mm;flex-shrink:0;line-height:1.5}
-.lv{font-size:8pt;font-weight:700;color:#111;line-height:1.5;flex:1}
+.lv{font-size:8pt;font-weight:700;color:#111;line-height:1.45;flex:1;white-space:pre-line} /* ← 여러 줄 지원 핵심 */
 .lv.mc{display:flex;flex-direction:column;gap:0}
 
-/* 하단 아이콘 — 이미지로 */
-.li{
-  flex-shrink:0;
-  padding:1.5mm 3mm;
-  display:flex;align-items:center;justify-content:center;
-}
-.li img{
-  height:9mm;
-  width:auto;
-  display:block;
-}
+/* 하단 아이콘 */
+.li{flex-shrink:0;padding:1.5mm 3mm;display:flex;align-items:center;justify-content:center}
+.li img{height:9mm;width:auto;display:block}
 
 /* PRINT */
 @media print{
@@ -175,7 +139,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
     <div class="ch"><span class="ct">② 라벨 공통 정보 <span style="font-weight:400;color:var(--muted)">— 시트 자동 입력 · 직접 수정 가능</span></span></div>
     <div class="cb">
       <div class="fg">
-        <div class="fi full"><label>商品名</label><input id="fn" type="text" placeholder="예: SWEET STEADY 2nd Anniv. メンバー別SPECIALトレカセット(12枚入)"></div>
+        <div class="fi full"><label>商品名</label><textarea id="fn" rows="3" placeholder="예: SWEET STEADY 2nd Anniv. メンバー別SPECIALトレカセット(12枚入)&#10;2번째 줄&#10;3번째 줄"></textarea></div>
         <div class="fi"><label>事務所</label><input id="fo" type="text" placeholder="예: TV ASAHI"></div>
         <div class="fi"><label>品番</label><input id="fs" type="text" placeholder="예: FZ-004676"></div>
         <div class="fi"><label>バーコード / JAN</label><input id="fj" type="text" placeholder="예: 4571653902837"></div>
@@ -199,7 +163,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 </div>
 </div>
 
-<!-- 숨겨진 PDF 렌더용 영역 -->
 <div id="print-area"></div>
 
 <script>
@@ -208,12 +171,10 @@ let boxes=[];
 const gv=id=>document.getElementById(id).value.trim();
 const sh=()=>({name:gv('fn'),office:gv('fo'),sku:gv('fs'),jan:gv('fj'),origin:gv('fr')||'MADE IN KOREA',total:boxes.length});
 
-/* ICON IMAGE URL — Google Drive */
 const ICON_IMG_URL='https://nemozlab.github.io/label/images/label_icon.png';
-
-/* FETCH */
 const PX=[u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`];
-async function fc(u){try{const r=await fetch(u);if(r.ok)return r;}catch(e){}for(const p of PX){try{const r=await fetch(p(u));if(r.ok)return r;}catch(e){}}throw new Error('시트 접근 실패 — 방법 A를 사용해주세요.')}
+
+async function fc(u){try{const r=await fetch(u);if(r.ok)return r}catch(e){}for(const p of PX){try{const r=await fetch(p(u));if(r.ok)return r}catch(e){}}throw new Error('시트 접근 실패 — 방법 A를 사용해주세요.')}
 function ids(url){return{id:(url.match(/\/d\/([a-zA-Z0-9_-]+)/)||[])[1]||null,gid:(url.match(/[?&#]gid=(\d+)/)||[])[1]||null}}
 
 async function go(){
@@ -247,30 +208,22 @@ async function go(){
   }catch(e){st('E','❌ '+e.message)}
 }
 
-/* CSV */
 function pl(line){const res=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++}else q=!q}else if(ch===','&&!q){res.push(c.trim());c=''}else c+=ch;}res.push(c.trim());return res}
 
-// CSV 전체 텍스트 파싱 — quoted cell 내 줄바꿈 보존
 function parseFullCSV(text){
-  // normalize line endings
   text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
   const rows=[];let row=[],c='',q=false;
   for(let i=0;i<text.length;i++){
     const ch=text[i];
-    if(ch==='"'){
-      if(q&&text[i+1]==='"'){c+='"';i++;} // escaped quote
-      else q=!q;
-    }else if(ch===','&&!q){
-      row.push(c);c='';
-    }else if(ch==='\n'&&!q){
-      row.push(c);rows.push(row);row=[];c='';
-    }else{
-      c+=ch; // quoted newline \n inside q is kept as \n in value
-    }
+    if(ch==='"'){if(q&&text[i+1]==='"'){c+='"';i++}else q=!q}
+    else if(ch===','&&!q){row.push(c);c=''}
+    else if(ch==='\n'&&!q){row.push(c);rows.push(row);row=[];c=''}
+    else c+=ch;
   }
-  if(c||row.length){row.push(c);rows.push(row);}
+  if(c||row.length){row.push(c);rows.push(row)}
   return rows.map(r=>r.map(v=>v.trim()));
 }
+
 function cn(s){if(!s)return null;const ns=(s+'').replace(/[^0-9]/g,' ').trim().split(/\s+/).filter(Boolean).map(Number).filter(n=>!isNaN(n));return ns.length?ns[ns.length-1]:null}
 
 function parseCSV(text){
@@ -278,7 +231,6 @@ function parseCSV(text){
   let hi=-1,cA=-1,cB=-1,cNB=-1,cT=-1,cM=-1,cS=-1;
   for(let i=0;i<rows.length;i++){
     const r=rows[i];
-    // A-M열만 체크 (0-12번 인덱스, 한국어 중복 컬럼 무시)
     const maxCol=Math.min(r.length,13);
     let _cA=-1,_cB=-1,_cNB=-1,_cT=-1,_cM=-1,_cS=-1;
     for(let j=0;j<maxCol;j++){
@@ -290,17 +242,13 @@ function parseCSV(text){
       if(v.includes('予備')||v.includes('예비'))_cS=j;
       if(v.includes('アーティスト')||v.includes('商品名'))_cA=j;
     }
-    // 헤더 조건: 総数量 있으면 OK
     if(_cT>-1&&(_cB>-1||_cNB>-1)){
-      hi=i;cA=_cA;cB=_cB;cNB=_cNB;cT=_cT;cM=_cM;cS=_cS;
-      break;
+      hi=i;cA=_cA;cB=_cB;cNB=_cNB;cT=_cT;cM=_cM;cS=_cS;break;
     }
   }
   if(hi===-1)return[];
 
-  // 공통 라벨 모드 (No. of Boxes 컬럼 존재)
   const isCommon=cNB>-1&&cB===-1;
-
   if(cA===-1)cA=Math.max(0,(cB>-1?cB:cNB)-2);
   if(cM===-1)cM=cT+1;
   if(cS===-1)cS=cT+2;
@@ -318,7 +266,6 @@ function parseCSV(text){
     if(!boxCount&&!aR)continue;
 
     if(isCommon){
-      // 공통 라벨: boxCount장 동일 라벨 생성
       const count=boxCount||1;
       for(let k=0;k<count;k++){
         bxs.push({no:null,single:true,common:true,count,a:aR,t:total||0,m:main,s:spare||0});
@@ -339,20 +286,46 @@ function parseCSV(text){
   return bxs;
 }
 
+/* ←←← 여기서부터 수정된 부분 ←←← */
 function fillInfo(csvText){
-  const map={};csvText.split('\n').map(pl).forEach(r=>{if(r[0]&&r[1])map[r[0].trim()]=r[1].trim();});
-  const g=(...ks)=>{for(const k of ks)for(const[mk,mv]of Object.entries(map))if(mk.includes(k)||k.includes(mk))return mv;return ''};
-  const v={name:g('商品名','상품명'),office:g('事務所','사무소','납품처'),sku:g('品番','품번'),jan:g('バーコード','바코드','JAN'),origin:g('原産国','원산국')};
-  if(v.name)document.getElementById('fn').value=v.name;
-  if(v.office)document.getElementById('fo').value=v.office;
-  if(v.sku)document.getElementById('fs').value=v.sku;
-  if(v.jan)document.getElementById('fj').value=v.jan;
-  if(v.origin)document.getElementById('fr').value=v.origin;
+  if(!csvText) return;
+  const rows = parseFullCSV(csvText);
+  const map = {};
+  
+  rows.forEach(r => {
+    if(r.length >= 2 && r[0]){
+      const key = r[0].trim();
+      const value = String(r[1] || '');   // \n 그대로 유지
+      map[key] = value;
+    }
+  });
+
+  const g = (...ks) => {
+    for(const k of ks){
+      for(const [mk, mv] of Object.entries(map)){
+        if(mk.includes(k) || k.includes(mk)) return mv;
+      }
+    }
+    return '';
+  };
+
+  const v = {
+    name: g('商品名','상품명'),
+    office: g('事務所','사무소','납품처'),
+    sku: g('品番','품번'),
+    jan: g('バーコード','바코드','JAN'),
+    origin: g('原産国','원산국')
+  };
+
+  if(v.name) document.getElementById('fn').value = v.name;
+  if(v.office) document.getElementById('fo').value = v.office;
+  if(v.sku) document.getElementById('fs').value = v.sku;
+  if(v.jan) document.getElementById('fj').value = v.jan;
+  if(v.origin) document.getElementById('fr').value = v.origin;
 }
 
 function refresh(){if(boxes.length)render();const o=document.getElementById('ao');o.style.display='inline';setTimeout(()=>o.style.display='none',2500)}
 
-/* 미리보기 — 1열 크게 */
 function render(){
   const s=sh();
   const div=document.getElementById('sp');
@@ -367,9 +340,7 @@ function render(){
   div.innerHTML=h;
 }
 
-/* PDF 다운로드 — 10cm × 10cm */
-/* PDF — html2canvas + jsPDF, scale:1, JPEG 압축 */
-async function doDownloadPDF(){
+async function doDownloadPDF(){ /* 기존과 동일 (변경 없음) */ 
   if(!boxes.length)return;
   const s=sh();
   const prog=document.getElementById('pdf-progress');
@@ -378,18 +349,13 @@ async function doDownloadPDF(){
   prog.classList.add('show');
   bar.style.width='0%';
 
-  const {jsPDF}=window.jspdf;
   const pdf=new jsPDF({unit:'mm',format:[100,100],orientation:'portrait'});
-
-  // 숨김 렌더 컨테이너 (378×378px = 100mm at 96dpi)
   const wrap=document.createElement('div');
   wrap.style.cssText="position:fixed;left:-9999px;top:0;width:378px;height:378px;overflow:hidden;background:#fff;font-family:'Noto Sans JP',sans-serif";
   document.body.appendChild(wrap);
 
-  // 폰트 + 이미지 preload
   await document.fonts.load("bold 8pt 'Noto Sans JP'");
 
-  // 이미지 → base64 변환 (프록시 포함)
   async function imgToB64(url){
     const urls=[url,...PX.map(p=>p(url))];
     for(const u of urls){
@@ -420,10 +386,8 @@ async function doDownloadPDF(){
     lbl.style.width='378px';
     lbl.style.height='378px';
     lbl.style.fontFamily="'Noto Sans JP',sans-serif";
-    // 로고 base64 주입
     const logoImg=lbl.querySelector('.lh-logo');
     if(logoImg&&logoB64) logoImg.src=logoB64;
-    // 아이콘 base64 주입
     const iconImg=lbl.querySelector('.li img');
     if(iconImg&&iconB64) iconImg.src=iconB64;
 
@@ -451,7 +415,7 @@ async function doDownloadPDF(){
   prog.classList.remove('show');
 }
 
-/* LABEL HTML */
+/* LABEL HTML — 상품명 여러 줄 지원 */
 function lblHTML(b,s,forPdf=false){
   const isCommon=!!b.common;
   const no=isCommon?null:String(b.no).padStart(2,'0');
@@ -470,7 +434,6 @@ function lblHTML(b,s,forPdf=false){
     ?`<span class="lv">${b.s?b.s:0} ea</span>`
     :`<div class="lv mc">${b.rows.map(r=>`<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i,'')} / ${r.s?r.s:0} ea</span>`).join('')}</div>`;
 
-  // 아이콘 — Google Drive 이미지
   const iconImg=`<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:10.8mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
 
   return `<div class="lbl">
@@ -487,7 +450,8 @@ function lblHTML(b,s,forPdf=false){
     <div class="lr"><span class="lk">数量 (本品)</span>${mHtml}</div>
     <div class="lr"><span class="lk">数量 (予備)</span>${spHtml}</div>
     <div class="lr"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
-    <div class="lr"><span class="lk">商品名</span><span class="lv">${s.name}</span></div>
+    <!-- 상품명 여러 줄 지원 -->
+    <div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
     <div class="lr"><span class="lk">品番</span><span class="lv">${s.sku}</span></div>
     <div class="lr"><span class="lk">バーコード</span><span class="lv">${s.jan}</span></div>
     <div class="lr"><span class="lk">原産国</span><span class="lv">${s.origin}</span></div>
@@ -505,3 +469,4 @@ function st(t,msg){
 </script>
 </body>
 </html>
+</DOCUMENT>
