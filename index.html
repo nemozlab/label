@@ -1,4 +1,3 @@
-<DOCUMENT filename="index.html">
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -77,18 +76,19 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .help-box li{margin-bottom:10px}
 .help-box p{font-size:12px;color:#666;margin-top:8px}
 
-/* LABEL */
+/* LABEL — 회색 행 7mm + 행간 1.5mm + 아이콘 더 위로 */
 .lbl{width:100mm;height:100mm;background:#fff;font-family:'Noto Sans JP',sans-serif;display:flex;flex-direction:column;border:1pt solid #111}
-.lh{display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
-.lh-t{font-size:8pt;font-weight:900;color:#111;letter-spacing:.3pt}
-.lh-logo{height:4.5mm;width:auto}
-.lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;justify-content:space-evenly}
-.lr{display:flex;align-items:center}
-.lk{font-size:8pt;font-weight:700;color:#111;min-width:23mm;flex-shrink:0;line-height:1.5}
-.lv{font-size:8pt;font-weight:700;color:#111;line-height:1.45;flex:1;white-space:pre-line}
-.lv.mc{display:flex;flex-direction:column;gap:0}
-.li{flex-shrink:0;padding:1.5mm 3mm;display:flex;align-items:center;justify-content:center}
-.li img{height:9mm;width:auto;display:block}
+.lh{display:flex;align-items:center;justify-content:space-between;padding:1.4mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
+.lh-t{font-size:9pt;font-weight:900;color:#111;letter-spacing:.3pt}
+.lh-logo{height:3.8mm;width:auto}
+.lb{flex:1;min-height:0;padding:1.2mm 2.8mm;display:flex;flex-direction:column;justify-content:space-between}
+.lr{display:flex;align-items:center;min-height:1.5mm}
+.lr.tall{display:flex;align-items:center;min-height:7mm}
+.lk{font-size:8.7pt;font-weight:700;color:#111;min-width:26mm;flex-shrink:0;line-height:1.35}
+.lv{font-size:8.7pt;font-weight:700;color:#111;line-height:1.35;flex:1;white-space:pre-line}
+.lv.mc{display:flex;flex-direction:column;gap:0.2mm}
+.li{flex-shrink:0;padding:3.0mm 3mm 0.2mm 3mm;display:flex;align-items:center;justify-content:center} /* ← 아이콘 더 위로 올림 */
+.li img{height:8.5mm;width:auto;display:block}
 
 /* PRINT */
 @media print{
@@ -107,7 +107,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 <div id="help-modal" onclick="if(event.target.id==='help-modal')hideHelp()">
   <div class="help-box" onclick="event.stopImmediatePropagation()">
     <h2>📖 Nemoz Label Generator 사용 방법</h2>
-    
     <h3>① 박스 번호가 존재하는 경우 (다품종 / 일반 납품서)</h3>
     <ol>
       <li>Google 시트에서 <strong>납품서 탭</strong>의 전체 주소를 복사합니다.</li>
@@ -116,7 +115,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
       <li>③ 미리보기 확인 후 우측 상단 <strong>⬇ PDF 다운로드</strong></li>
       <li>PDF를 <strong>100mm × 100mm 실제 크기</strong>로 인쇄</li>
     </ol>
-
     <h3>② 공통 라벨인 경우 (No. of Boxes 컬럼 있는 경우)</h3>
     <ol>
       <li>Google 시트에서 <strong>공통 라벨용 탭</strong>의 전체 주소를 복사합니다.</li>
@@ -125,7 +123,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
       <li><strong>⬇ PDF 다운로드</strong></li>
       <li>PDF를 <strong>100mm × 100mm 실제 크기</strong>로 인쇄</li>
     </ol>
-
     <div style="text-align:center;margin-top:32px">
       <button class="btn btn-d" onclick="hideHelp()" style="padding:10px 28px">닫기</button>
     </div>
@@ -152,7 +149,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 </div>
 
 <div class="wrap">
-  <!-- ① URL 입력 -->
   <div class="card">
     <div class="ch"><span class="ct">① 구글 시트 URL 입력</span></div>
     <div class="cb">
@@ -165,7 +161,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
     </div>
   </div>
 
-  <!-- ② 공통 정보 -->
   <div class="card">
     <div class="ch"><span class="ct">② 라벨 공통 정보 <span style="font-weight:400;color:var(--muted)">— 시트 자동 입력 · 직접 수정 가능</span></span></div>
     <div class="cb">
@@ -183,7 +178,6 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
     </div>
   </div>
 
-  <!-- ③ 미리보기 -->
   <div class="card">
     <div class="ch">
       <span class="ct">③ 라벨 스티커 미리보기 <span style="font-weight:400;color:var(--muted)">— 실제 인쇄 결과</span></span>
@@ -300,7 +294,7 @@ function parseCSV(text) {
       if (v.includes('総数量') || v.includes('총수량')) _cT = j;
       if (v.includes('本品') || v.includes('본품')) _cM = j;
       if (v.includes('予備') || v.includes('예비')) _cS = j;
-      if (v.includes('アーティスト') || v.includes('商品名')) _cA = j;
+      if (v.includes('アーティスト') || v.includes('상품명')) _cA = j;
     }
     if (_cT > -1 && (_cB > -1 || _cNB > -1)) {
       hi = i; cA = _cA; cB = _cB; cNB = _cNB; cT = _cT; cM = _cM; cS = _cS;
@@ -480,7 +474,7 @@ async function doDownloadPDF() {
   bar.style.width = '100%';
   msg.textContent = '저장 중...';
   await new Promise(r => setTimeout(r, 200));
-  pdf.save('nemoz_stickers.pdf');
+  pdf.save('Label stickers.pdf');
   prog.classList.remove('show');
 }
 
@@ -502,7 +496,7 @@ function lblHTML(b, s) {
     ? `<span class="lv">${b.s ? b.s : 0} ea</span>`
     : `<div class="lv mc">${b.rows.map(r => `<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i, '')} / ${r.s ? r.s : 0} ea</span>`).join('')}</div>`;
 
-  const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:10.8mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
+  const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:8.5mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
 
   return `<div class="lbl">
   <div class="lh">
@@ -511,17 +505,17 @@ function lblHTML(b, s) {
   </div>
   <div class="lb">
     ${isCommon
-      ? `<div class="lr"><span class="lk">No. of Boxes</span><span class="lv">${b.count} Box</span></div>`
-      : `<div class="lr"><span class="lk">Box No.</span><span class="lv">${no}</span></div>`}
-    <div class="lr"><span class="lk">アーティスト名</span>${aHtml}</div>
-    <div class="lr"><span class="lk">総数量</span>${tHtml}</div>
-    <div class="lr"><span class="lk">数量 (本品)</span>${mHtml}</div>
-    <div class="lr"><span class="lk">数量 (予備)</span>${spHtml}</div>
-    <div class="lr"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
-    <div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
-    <div class="lr"><span class="lk">品番</span><span class="lv">${s.sku}</span></div>
-    <div class="lr"><span class="lk">バーコード</span><span class="lv">${s.jan}</span></div>
-    <div class="lr"><span class="lk">原産国</span><span class="lv">${s.origin}</span></div>
+      ? `<div class="lr tall"><span class="lk">No. of Boxes</span><span class="lv">${b.count} Box</span></div>`
+      : `<div class="lr tall"><span class="lk">Box No.</span><span class="lv">${no}</span></div>`}
+    <div class="lr tall"><span class="lk">アーティスト名</span>${aHtml}</div>
+    <div class="lr tall"><span class="lk">総数量</span>${tHtml}</div>
+    <div class="lr tall"><span class="lk">数量 (本品)</span>${mHtml}</div>
+    <div class="lr tall"><span class="lk">数量 (予備)</span>${spHtml}</div>
+    <div class="lr tall"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
+    <div class="lr tall"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
+    <div class="lr tall"><span class="lk">品番</span><span class="lv">${s.sku}</span></div>
+    <div class="lr tall"><span class="lk">バーコード</span><span class="lv">${s.jan}</span></div>
+    <div class="lr tall"><span class="lk">原産国</span><span class="lv">${s.origin}</span></div>
   </div>
   <div class="li">${iconImg}</div>
 </div>`;
@@ -543,4 +537,3 @@ function hideHelp() {
 </script>
 </body>
 </html>
-</DOCUMENT>
