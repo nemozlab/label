@@ -68,15 +68,22 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .help-box ol{line-height:1.7;padding-left:20px}
 .help-box li{margin-bottom:10px}
 .help-box p{font-size:12px;color:#666;margin-top:8px}
-.lbl{width:100mm;height:100mm;background:#fff;font-family:'Noto Sans JP',sans-serif;display:flex;flex-direction:column;border:1pt solid #111}
+.lbl{width:100mm;height:100mm;background:#fff;font-family:'Noto Sans JP',sans-serif;display:flex;flex-direction:column;border:1pt solid #111;overflow:hidden}
 .lh{display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
 .lh-t{font-size:9pt;font-weight:900;color:#111;letter-spacing:.3pt}
 .lh-logo{height:4.5mm;width:auto}
-.lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;justify-content:space-evenly}
-.lr{display:flex;align-items:center;gap:3mm}               /* 좌우 간격 좁힘 */
-.lk{font-size:8.5pt;font-weight:700;color:#111;min-width:23.5mm;flex-shrink:0;line-height:1.55}  /* 좌측 폰트 8.5pt + 너비 좁힘 */
-.lv{font-size:9.5pt;font-weight:700;color:#111;line-height:1.5;flex:1;white-space:pre-line}
-.lv.mc{display:flex;flex-direction:column;gap:1.5pt}
+.lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;gap:4.5mm}
+.lr{display:flex;align-items:flex-start;gap:3mm}
+.lk{font-size:9pt;font-weight:700;color:#111;min-width:23.5mm;flex-shrink:0;line-height:1.55}
+.lv{font-size:9pt;font-weight:700;color:#111;line-height:1.5;flex:1;white-space:pre-line}
+.qty-table{width:100%;display:flex;flex-direction:column}
+.qty-header{display:flex;justify-content:space-between;gap:4mm;margin-bottom:1pt;border-bottom:0.5pt solid #111;padding-bottom:1pt}
+.qty-h{font-size:9pt;font-weight:700;color:#111;flex:1;text-align:center}
+.qty-h.art{flex:2;text-align:left}
+.qty-row{display:flex;justify-content:space-between;gap:4mm;align-items:baseline}
+.qty-row:not(:last-child){border-bottom:0.5pt solid #111;padding-bottom:1pt;margin-bottom:1pt}
+.qty-art{flex:2;white-space:pre-line;font-size:9pt}
+.qty-val{font-size:9pt;font-weight:700;flex:1;text-align:center}
 .li{flex-shrink:0;padding:1.5mm 3mm;display:flex;align-items:center;justify-content:center}
 .li img{height:9mm;width:auto;display:block}
 @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.app-ui{display:none!important}#print-area{display:block!important}@page{size:100mm 100mm;margin:0}.lbl{page-break-after:always;break-after:page;page-break-inside:avoid}.lbl:last-child{page-break-after:avoid;break-after:avoid}}
@@ -84,26 +91,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 </head>
 <body>
 
-<!-- help-modal, pdf-progress, UI 부분은 이전과 동일 -->
 <div id="help-modal" onclick="if(event.target.id==='help-modal')hideHelp()">
   <div class="help-box" onclick="event.stopImmediatePropagation()">
     <h2>📖 Nemoz Label Generator 사용 방법</h2>
-    <h3>① 박스 번호가 존재하는 경우 (다품종 / 일반 납품서)</h3>
-    <ol>
-      <li>Google 시트에서 <strong>납품서 탭</strong>의 전체 주소를 복사합니다.</li>
-      <li>① 구글 시트 URL 입력 칸에 붙여넣기 → <strong>불러오기</strong> 클릭</li>
-      <li>② 라벨 공통 정보가 자동 채워집니다 (상품명 여러 줄도 OK)</li>
-      <li>③ 미리보기 확인 후 우측 상단 <strong>⬇ PDF 다운로드</strong></li>
-      <li>PDF를 <strong>100mm × 100mm 실제 크기</strong>로 인쇄</li>
-    </ol>
-    <h3>② 공통 라벨인 경우 (No. of Boxes 컬럼 있는 경우)</h3>
-    <ol>
-      <li>Google 시트에서 <strong>공통 라벨용 탭</strong>의 전체 주소를 복사합니다.</li>
-      <li>① 구글 시트 URL 입력 칸에 붙여넣기 → <strong>불러오기</strong> 클릭</li>
-      <li>③ 미리보기에서 “共通ラベル”과 No. of Boxes 수만큼 라벨이 생성된 것을 확인</li>
-      <li><strong>⬇ PDF 다운로드</strong></li>
-      <li>PDF를 <strong>100mm × 100mm 실제 크기</strong>로 인쇄</li>
-    </ol>
+    <div style="display:flex;flex-direction:column;gap:14px;font-size:14px;line-height:1.7">
+      <div>· Google 시트 <strong>납품서 탭</strong> URL 복사</div>
+      <div>· ① URL 붙여넣기 → <strong>불러오기</strong></div>
+      <div>· ② 공통 정보 자동 입력 확인 (수정 시 미리보기 자동 반영)</div>
+      <div>· ③ 미리보기 확인 후 <strong>PDF 다운로드</strong></div>
+    </div>
     <div style="text-align:center;margin-top:32px">
       <button class="btn btn-d" onclick="hideHelp()" style="padding:10px 28px">닫기</button>
     </div>
@@ -142,25 +138,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
   </div>
 
   <div class="card">
-    <div class="ch"><span class="ct">② 라벨 공통 정보 <span style="font-weight:400;color:var(--muted)">— 시트 자동 입력 · 직접 수정 가능</span></span></div>
+    <div class="ch"><span class="ct">② 라벨 공통 정보</span></div>
     <div class="cb">
-      <div class="fg">
-        <div class="fi full"><label>商品名</label><textarea id="fn" rows="3" placeholder="예: SWEET STEADY 2nd Anniv. メンバー別SPECIALトレカセット(12枚入)&#10;2번째 줄&#10;3번째 줄"></textarea></div>
-        <div class="fi"><label>事務所</label><input id="fo" type="text" placeholder="예: TV ASAHI"></div>
-        <div class="fi"><label>品番</label><input id="fs" type="text" placeholder="납품서(공통) 시트에서 자동 입력 (수동 수정 가능)"></div>
-        <div class="fi"><label>バーコード / JAN</label><input id="fj" type="text" placeholder="납품서(공통) 시트에서 자동 입력 (수동 수정 가능)"></div>
-        <div class="fi"><label>原産国</label><input id="fr" type="text" value="MADE IN KOREA"></div>
-      </div>
-      <div class="ar">
-        <span class="ao" id="ao">✅ 적용됨</span>
-        <button class="btn btn-d" onclick="refresh()">✎ 수정 · 미리보기 갱신</button>
-      </div>
+      <div id="common-fg" class="fg"></div>
     </div>
   </div>
 
   <div class="card">
     <div class="ch">
-      <span class="ct">③ 라벨 스티커 미리보기 <span style="font-weight:400;color:var(--muted)">— 실제 인쇄 결과</span></span>
+      <span class="ct">③ 라벨 스티커 미리보기</span>
       <span id="bb" style="font-size:11px;color:var(--muted)">시트를 불러오면 자동으로 채워집니다</span>
     </div>
     <div id="sp"><div class="empty"><div class="ei">🏷</div><div>시트 URL을 입력해주세요</div></div></div>
@@ -173,9 +159,38 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 <script>
 const {jsPDF} = window.jspdf;
 let boxes = [];
+let commonData = {};
+let commonOrder = [];
 
-const gv = id => document.getElementById(id).value.trim();
-const sh = () => ({name: gv('fn'), office: gv('fo'), sku: gv('fs'), jan: gv('fj'), origin: gv('fr') || 'MADE IN KOREA', total: boxes.length});
+const safeTrim = v => (v || '').toString().trim();
+
+const gv = id => {
+  const el = document.getElementById(id);
+  return el ? safeTrim(el.value) : '';
+};
+
+/* ★ FIX #2: 고정 필드는 commonData 유무와 무관하게 항상 읽기 */
+const sh = () => {
+  const data = {};
+  const fixed = [
+    { key: '상품명',    id: 'fn' },
+    { key: '事務所',    id: 'fo' },
+    { key: '品番',      id: 'fs' },
+    { key: 'バーコード', id: 'fj' },
+    { key: '原産国',    id: 'fr' },
+  ];
+  fixed.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (el) data[f.key] = safeTrim(el.value);
+  });
+  // 고정 외 extra 필드
+  Object.keys(commonData).forEach(k => {
+    if (fixed.some(f => f.key === k)) return;
+    const el = document.getElementById('extra_' + k);
+    if (el) data[k] = safeTrim(el.value);
+  });
+  return data;
+};
 
 const ICON_IMG_URL = 'https://nemozlab.github.io/label/images/label_icon.png';
 const PX = [
@@ -189,7 +204,7 @@ async function fc(u) {
   for (const p of PX) {
     try { const r = await fetch(p(u)); if (r.ok) return r; } catch(e) {}
   }
-  throw new Error('시트 접근 실패 — 방법 A를 사용해주세요.');
+  throw new Error('시트 접근 실패');
 }
 
 function ids(url) {
@@ -200,35 +215,39 @@ function ids(url) {
 }
 
 async function go() {
-  const url = gv('su'); if (!url) { alert('URL 입력'); return; }
-  st('L', '시트 불러오는 중...');
   try {
-    const {id, gid} = ids(url); if (!id) throw new Error('시트 ID 없음');
-    let bt = null, it = null;
+    const url = gv('su');
+    if (!url) { alert('URL을 입력해주세요'); return; }
+
+    st('L', '시트 불러오는 중...');
+
+    const {id, gid} = ids(url);
+    if (!id) throw new Error('시트 ID를 찾을 수 없습니다');
+
+    let bt = null;
     if (url.includes('/pub') && url.includes('output=csv')) {
-      const r = await fetch(url); if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
       bt = await r.text();
-      try {
-        const r2 = await fc(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('라벨공통정보')}`);
-        it = await r2.text();
-      } catch(e) {}
     } else {
-      const [r1, r2] = await Promise.all([
-        fc(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv${gid ? `&gid=${gid}` : ''}`),
-        fc(`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent('라벨공통정보')}`).catch(() => null)
-      ]);
-      if (!r1 || !r1.ok) throw new Error('시트 읽기 실패');
+      const r1 = await fc(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv${gid ? `&gid=${gid}` : ''}`);
+      if (!r1.ok) throw new Error('시트 읽기 실패');
       bt = await r1.text();
-      if (r2 && r2.ok) it = await r2.text();
     }
+
     boxes = parseCSV(bt);
-    if (!boxes.length) throw new Error('박스 데이터 없음 — 납품서 탭 확인');
-    if (it) fillInfo(it);
+    if (!boxes.length) throw new Error('박스 데이터가 없습니다');
+
+    const parsed = parseCommonInfo(bt);
+    commonData = parsed.map;
+    commonOrder = parsed.order;
+    buildCommonUI();
+
     render();
-    st('D', `✅ ${boxes.length}개 박스${it ? ' + 공통정보' : ''} 완료`);
+    st('D', `✅ ${boxes.length}개 박스 + 공통정보 완료`);
     document.getElementById('bpdf').disabled = false;
     const isCommonMode = boxes.length > 0 && boxes[0].common;
-    document.getElementById('bb').textContent = isCommonMode ? `공통 라벨 ${boxes.length}장 (동일 내용)` : `총 ${boxes.length}장`;
+    document.getElementById('bb').textContent = isCommonMode ? `공통 라벨 ${boxes.length}장` : `총 ${boxes.length}장`;
   } catch(e) {
     st('E', '❌ ' + e.message);
   }
@@ -271,10 +290,10 @@ function parseCSV(text) {
       const v = (r[j] || '').toLowerCase().trim();
       if ((v === 'box no' || v.includes('box no')) && !v.includes('of')) _cB = j;
       if (v.includes('no. of box') || v.includes('no of box') || v.includes('박스 개수') || v.includes('상자 개수')) _cNB = j;
-      if (v.includes('総数量') || v.includes('총수량')) _cT = j;
-      if (v.includes('本品') || v.includes('본품')) _cM = j;
-      if (v.includes('予備') || v.includes('예비')) _cS = j;
-      if (v.includes('アーティスト') || v.includes('상품명')) _cA = j;
+      if (v.includes('총수량') || v.includes('総数量')) _cT = j;
+      if (v.includes('본품') || v.includes('本品')) _cM = j;
+      if (v.includes('예비') || v.includes('予備')) _cS = j;
+      if (v.includes('아티스트') || v.includes('상품명')) _cA = j;
       if (v.includes('品番') || v.includes('sku')) _cSKU = j;
       if (v.includes('バーコード') || v.includes('jan') || v.includes('barcode')) _cJAN = j;
     }
@@ -334,40 +353,107 @@ function parseCSV(text) {
   return bxs;
 }
 
-function fillInfo(csvText) {
-  if (!csvText) return;
-  const rows = parseFullCSV(csvText);
+/* ★ FIX #3: [라벨 공통 정보] 마커 아래만 스캔, 시트 순서 기억 */
+function parseCommonInfo(text) {
+  const rows = parseFullCSV(text);
   const map = {};
-  rows.forEach(r => {
-    if (r.length >= 2 && r[0]) {
-      const key = r[0].trim();
-      const value = String(r[1] || '');
-      map[key] = value;
+  const order = [];
+
+  const KEY_MAP = [
+    { match: v => v.includes('事務所'),                                                   key: '事務所' },
+    { match: v => v.includes('상품명') || v.includes('商品名'),                           key: '상품명' },
+    { match: v => v.includes('原産国') || v.includes('원산국'),                           key: '原産国' },
+    { match: v => v.includes('品番')   || v.includes('SKU'),                             key: '品番' },
+    { match: v => v.includes('バーコード') || v.includes('JAN') || v.includes('바코드'),  key: 'バーコード' },
+  ];
+
+  let startRow = 0;
+  for (let ri = 0; ri < rows.length; ri++) {
+    if (rows[ri].some(c => safeTrim(c).includes('라벨 공통 정보') || safeTrim(c).includes('라벨공통정보'))) {
+      startRow = ri + 1;
+      break;
     }
-  });
-  const g = (...ks) => {
-    for (const k of ks) {
-      for (const [mk, mv] of Object.entries(map)) {
-        if (mk.includes(k) || k.includes(mk)) return mv;
+  }
+
+  for (let ri = startRow; ri < rows.length; ri++) {
+    const r = rows[ri];
+    if (!r || r.length < 2) continue;
+    for (let ci = 0; ci < r.length; ci++) {
+      const cell = safeTrim(r[ci]);
+      if (!cell) continue;
+      const found = KEY_MAP.find(k => k.match(cell));
+      if (!found || map[found.key]) continue;
+      const vals = r.slice(ci + 1).map(v => safeTrim(v)).filter(Boolean);
+      const value = vals.join('\n');
+      if (value) {
+        map[found.key] = value;
+        order.push(found.key);
       }
     }
-    return '';
-  };
-  const v = {
-    name: g('商品名', '상품명'),
-    office: g('事務所', '사무소', '납품처'),
-    origin: g('原産国', '원산국')
-  };
-  if (v.name) document.getElementById('fn').value = v.name;
-  if (v.office) document.getElementById('fo').value = v.office;
-  if (v.origin) document.getElementById('fr').value = v.origin;
+  }
+  return { map, order };
+}
+
+function buildCommonUI() {
+  const container = document.getElementById('common-fg');
+  container.innerHTML = '';
+
+  const fixed = [
+    {key:'상품명', label:'商品名', id:'fn', type:'textarea', rows:3},
+    {key:'事務所', label:'事務所', id:'fo', type:'text'},
+    {key:'品番', label:'品番', id:'fs', type:'text'},
+    {key:'バーコード', label:'バーコード / JAN', id:'fj', type:'text'},
+    {key:'原産国', label:'原産国', id:'fr', type:'text'}
+  ];
+
+  fixed.forEach(f => {
+    const value = commonData[f.key] || (f.key === '原産国' ? 'MADE IN KOREA' : '');
+    const div = document.createElement('div');
+    div.className = f.key === '상품명' ? 'fi full' : 'fi';
+    div.innerHTML = `
+      <label>${f.label}</label>
+      ${f.type === 'textarea'
+        ? `<textarea id="${f.id}" rows="${f.rows}" oninput="render()">${value}</textarea>`
+        : `<input id="${f.id}" type="text" value="${value}" oninput="render()">`}
+    `;
+    container.appendChild(div);
+  });
+
+  /* ★ FIX: バーコード 오타 수정 (バー코드 → バーコード) */
+  Object.keys(commonData).forEach(k => {
+    if (['상품명','事務所','品番','バーコード','原産国'].includes(k)) return;
+    const div = document.createElement('div');
+    div.className = 'fi';
+    div.innerHTML = `
+      <label>${k}</label>
+      <input id="extra_${k}" type="text" value="${commonData[k]}" oninput="render()">
+    `;
+    container.appendChild(div);
+  });
 }
 
 function refresh() {
   if (boxes.length) render();
   const o = document.getElementById('ao');
   o.style.display = 'inline';
-  setTimeout(() => o.style.display = 'none', 2500);
+  setTimeout(() => o.style.display = 'none', 2000);
+}
+
+function autoFitLabel(lbl) {
+  const lb = lbl.querySelector('.lb');
+  if (!lb) return;
+  lb.style.transform = '';
+  lb.style.transformOrigin = '';
+  const lhEl = lbl.querySelector('.lh');
+  const liEl = lbl.querySelector('.li');
+  const lhH = lhEl ? lhEl.offsetHeight : 0;
+  const liH = liEl ? liEl.offsetHeight : 0;
+  const avail = lbl.offsetHeight - lhH - liH - 2;
+  if (lb.scrollHeight > avail && avail > 0) {
+    const scale = avail / lb.scrollHeight;
+    lb.style.transform = `scaleY(${scale})`;
+    lb.style.transformOrigin = 'top left';
+  }
 }
 
 function render() {
@@ -382,6 +468,9 @@ function render() {
   });
   h += '</div>';
   div.innerHTML = h;
+  requestAnimationFrame(() => {
+    div.querySelectorAll('.lbl').forEach(el => autoFitLabel(el));
+  });
 }
 
 async function doDownloadPDF() {
@@ -398,7 +487,7 @@ async function doDownloadPDF() {
   wrap.style.cssText = "position:fixed;left:-9999px;top:0;width:378px;height:378px;overflow:hidden;background:#fff;font-family:'Noto Sans JP',sans-serif";
   document.body.appendChild(wrap);
 
-  await document.fonts.load("bold 9.5pt 'Noto Sans JP'");
+  await document.fonts.load("bold 9pt 'Noto Sans JP'");
 
   async function imgToB64(url) {
     const urls = [url, ...PX.map(p => p(url))];
@@ -425,7 +514,7 @@ async function doDownloadPDF() {
     bar.style.width = Math.round((i / boxes.length) * 90) + '%';
     msg.textContent = `BOX ${b.no || ''} (${i + 1}/${boxes.length})`;
 
-    wrap.innerHTML = lblHTML(b, s);
+    wrap.innerHTML = lblHTML(b, sh());
     const lbl = wrap.querySelector('.lbl');
     lbl.style.width = '378px';
     lbl.style.height = '378px';
@@ -436,16 +525,11 @@ async function doDownloadPDF() {
     if (iconImg && iconB64) iconImg.src = iconB64;
 
     await new Promise(r => setTimeout(r, 80));
+    await new Promise(r => requestAnimationFrame(r));
+    autoFitLabel(lbl);
+    await new Promise(r => setTimeout(r, 30));
 
-    const canvas = await html2canvas(lbl, {
-      scale: 2.5,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: '#ffffff',
-      width: 378,
-      height: 378,
-    });
-
+    const canvas = await html2canvas(lbl, {scale: 2.5, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', width: 378, height: 378});
     const imgData = canvas.toDataURL('image/jpeg', 0.75);
     if (i > 0) pdf.addPage([100, 100], 'p');
     pdf.addImage(imgData, 'JPEG', 0, 0, 100, 100, undefined, 'FAST');
@@ -462,23 +546,15 @@ async function doDownloadPDF() {
 function lblHTML(b, s) {
   const isCommon = !!b.common;
   const no = isCommon ? null : String(b.no).padStart(2, '0');
-
-  const aHtml = b.single
-    ? `<span class="lv">${b.a}</span>`
-    : `<div class="lv mc">${b.rows.map(r => `<span>${r.a}</span>`).join('')}</div>`;
-
   const tHtml = `<span class="lv">${b.t} ea</span>`;
 
-  const mHtml = b.single
-    ? `<span class="lv">${b.m !== null && b.m !== undefined ? b.m : 0} ea</span>`
-    : `<div class="lv mc">${b.rows.map(r => `<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i, '')} / ${r.m !== null && r.m !== undefined ? r.m : 0} ea</span>`).join('')}</div>`;
+  const qtyRows = b.single
+    ? `<div class="qty-row"><span class="qty-art">${b.a}</span><span class="qty-val">${b.m || 0} ea</span><span class="qty-val">${b.s || 0} ea</span></div>`
+    : b.rows.map(r => `<div class="qty-row"><span class="qty-art">${r.a}</span><span class="qty-val">${r.m || 0} ea</span><span class="qty-val">${r.s || 0} ea</span></div>`).join('');
 
-  const spHtml = b.single
-    ? `<span class="lv">${b.s ? b.s : 0} ea</span>`
-    : `<div class="lv mc">${b.rows.map(r => `<span>${r.a.replace(/SWEET\s+STEADY\s*[-–]\s*/i, '')} / ${r.s ? r.s : 0} ea</span>`).join('')}</div>`;
-
-  const useSKU = b.single ? (b.sku || s.sku) : (b.rows && b.rows[0] ? b.rows[0].sku || s.sku : s.sku);
-  const useJAN = b.single ? (b.jan || s.jan) : (b.rows && b.rows[0] ? b.rows[0].jan || s.jan : s.jan);
+  const useSKU = b.single ? (b.sku || s['品番'] || '') : (b.rows && b.rows[0] ? b.rows[0].sku || s['品番'] : s['品番'] || '');
+  /* ★ FIX #1: バー코드 오타 수정 → バーコード */
+  const useJAN = b.single ? (b.jan || s['バーコード'] || '') : (b.rows && b.rows[0] ? b.rows[0].jan || s['バーコード'] : s['バーコード'] || '');
 
   const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:9mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
 
@@ -489,17 +565,25 @@ function lblHTML(b, s) {
   </div>
   <div class="lb">
     ${isCommon
-      ? `<div class="lr"><span class="lk">No. of Boxes</span><span class="lv">${b.count} Box</span></div>`
-      : `<div class="lr"><span class="lk">Box No.</span><span class="lv">${no}</span></div>`}
-    <div class="lr"><span class="lk">アーティスト名</span>${aHtml}</div>
+      ? `<div class="lr" style="padding-top:2.5mm"><span class="lk">No. of Boxes</span><span class="lv">${b.count} Box</span></div>`
+      : `<div class="lr" style="padding-top:2.5mm"><span class="lk">Box No.</span><span class="lv">${no}</span></div>`}
     <div class="lr"><span class="lk">総数量</span>${tHtml}</div>
-    <div class="lr"><span class="lk">数量 (本品)</span>${mHtml}</div>
-    <div class="lr"><span class="lk">数量 (予備)</span>${spHtml}</div>
-    <div class="lr"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
-    <div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
-    ${useSKU.trim() ? `<div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>` : ''}
-    ${useJAN.trim() ? `<div class="lr"><span class="lk">バーコード</span><span class="lv">${useJAN}</span></div>` : ''}
-    <div class="lr"><span class="lk">原産国</span><span class="lv">${s.origin}</span></div>
+    <div class="qty-table">
+      <div class="qty-header">
+        <span class="qty-h art">アーティスト名</span>
+        <span class="qty-h">本品</span>
+        <span class="qty-h">予備</span>
+      </div>
+      ${qtyRows}
+    </div>
+    ${(commonOrder.length > 0 ? commonOrder : ['상품명','事務所','品番','バーコード','原産国']).map(k => {
+      if (k === '事務所')     return `<div class="lr"><span class="lk">事務所</span><span class="lv">${s['事務所'] || ''}</span></div>`;
+      if (k === '상품명')     return `<div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s['상품명'] || ''}</span></div>`;
+      if (k === '品番')       return useSKU ? `<div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>` : '';
+      if (k === 'バーコード')  return useJAN ? `<div class="lr"><span class="lk">バーコード</span><span class="lv">${useJAN}</span></div>` : '';
+      if (k === '原産国')     return `<div class="lr"><span class="lk">原産国</span><span class="lv">${s['原産国'] || 'MADE IN KOREA'}</span></div>`;
+      return '';
+    }).join('')}
   </div>
   <div class="li">${iconImg}</div>
 </div>`;
