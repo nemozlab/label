@@ -84,6 +84,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 </head>
 <body>
 
+<!-- (help-modal, pdf-progress 등 기존 UI 부분은 그대로 유지) -->
 <div id="help-modal" onclick="if(event.target.id==='help-modal')hideHelp()">
   <div class="help-box" onclick="event.stopImmediatePropagation()">
     <h2>📖 Nemoz Label Generator 사용 방법</h2>
@@ -222,7 +223,7 @@ async function go() {
     }
     boxes = parseCSV(bt);
     if (!boxes.length) throw new Error('박스 데이터 없음 — 납품서 탭 확인');
-    if (it) fillInfo(it);                    // ← 라벨공통정보는 여전히 상품명·事務所·原産国만 사용
+    if (it) fillInfo(it);
     render();
     st('D', `✅ ${boxes.length}개 박스${it ? ' + 공통정보' : ''} 완료`);
     document.getElementById('bpdf').disabled = false;
@@ -233,7 +234,7 @@ async function go() {
   }
 }
 
-function parseFullCSV(text) {
+function parseFullCSV(text) { /* 기존 그대로 */ 
   text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const rows = []; let row = [], c = '', q = false;
   for (let i = 0; i < text.length; i++) {
@@ -253,13 +254,13 @@ function parseFullCSV(text) {
   return rows.map(r => r.map(v => v.trim()));
 }
 
-function cn(s) {
+function cn(s) { /* 기존 그대로 */ 
   if (!s) return null;
   const ns = (s + '').replace(/[^0-9]/g, ' ').trim().split(/\s+/).filter(Boolean).map(Number).filter(n => !isNaN(n));
   return ns.length ? ns[ns.length - 1] : null;
 }
 
-function parseCSV(text) {
+function parseCSV(text) { /* 기존 그대로 (변경 없음) */ 
   const rows = parseFullCSV(text);
   let hi = -1, cA = -1, cB = -1, cNB = -1, cT = -1, cM = -1, cS = -1, cSKU = -1, cJAN = -1;
   for (let i = 0; i < rows.length; i++) {
@@ -333,7 +334,7 @@ function parseCSV(text) {
   return bxs;
 }
 
-function fillInfo(csvText) {
+function fillInfo(csvText) { /* 기존 그대로 */ 
   if (!csvText) return;
   const rows = parseFullCSV(csvText);
   const map = {};
@@ -356,12 +357,10 @@ function fillInfo(csvText) {
     name: g('商品名', '상품명'),
     office: g('事務所', '사무소', '납품처'),
     origin: g('原産国', '원산국')
-    // ← 품번·바코드는 여기서 가져오지 않음 (납품서 시트에서만 사용)
   };
   if (v.name) document.getElementById('fn').value = v.name;
   if (v.office) document.getElementById('fo').value = v.office;
   if (v.origin) document.getElementById('fr').value = v.origin;
-  // fs, fj는 납품서(공통) 시트의 개별 값만 사용
 }
 
 function refresh() {
@@ -385,7 +384,7 @@ function render() {
   div.innerHTML = h;
 }
 
-async function doDownloadPDF() {
+async function doDownloadPDF() { /* 기존 그대로 */ 
   if (!boxes.length) return;
   const s = sh();
   const prog = document.getElementById('pdf-progress');
@@ -498,8 +497,11 @@ function lblHTML(b, s) {
     <div class="lr"><span class="lk">数量 (予備)</span>${spHtml}</div>
     <div class="lr"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
     <div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
-    <div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>
-    <div class="lr"><span class="lk">バーコード</span><span class="lv">${useJAN}</span></div>
+    
+    <!-- 🔥 여기만 수정: 시트에 컬럼이 없으면 해당 줄 자체를 출력하지 않음 -->
+    ${useSKU.trim() ? `<div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>` : ''}
+    ${useJAN.trim() ? `<div class="lr"><span class="lk">バーコード</span><span class="lv">${useJAN}</span></div>` : ''}
+    
     <div class="lr"><span class="lk">原産国</span><span class="lv">${s.origin}</span></div>
   </div>
   <div class="li">${iconImg}</div>
