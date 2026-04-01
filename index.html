@@ -70,13 +70,13 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 .help-box p{font-size:12px;color:#666;margin-top:8px}
 .lbl{width:100mm;height:100mm;background:#fff;font-family:'Noto Sans JP',sans-serif;display:flex;flex-direction:column;border:1pt solid #111}
 .lh{display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
-.lh-t{font-size:8pt;font-weight:900;color:#111;letter-spacing:.3pt}
+.lh-t{font-size:9pt;font-weight:900;color:#111;letter-spacing:.3pt}
 .lh-logo{height:4.5mm;width:auto}
 .lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;justify-content:space-evenly}
-.lr{display:flex;align-items:center}
-.lk{font-size:8pt;font-weight:700;color:#111;min-width:23mm;flex-shrink:0;line-height:1.5}
-.lv{font-size:8pt;font-weight:700;color:#111;line-height:1.45;flex:1;white-space:pre-line}
-.lv.mc{display:flex;flex-direction:column;gap:0}
+.lr{display:flex;align-items:center;gap:3mm}               /* 좌우 간격 좁힘 */
+.lk{font-size:8.5pt;font-weight:700;color:#111;min-width:23.5mm;flex-shrink:0;line-height:1.55}  /* 좌측 폰트 8.5pt + 너비 좁힘 */
+.lv{font-size:9.5pt;font-weight:700;color:#111;line-height:1.5;flex:1;white-space:pre-line}
+.lv.mc{display:flex;flex-direction:column;gap:1.5pt}
 .li{flex-shrink:0;padding:1.5mm 3mm;display:flex;align-items:center;justify-content:center}
 .li img{height:9mm;width:auto;display:block}
 @media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.app-ui{display:none!important}#print-area{display:block!important}@page{size:100mm 100mm;margin:0}.lbl{page-break-after:always;break-after:page;page-break-inside:avoid}.lbl:last-child{page-break-after:avoid;break-after:avoid}}
@@ -84,7 +84,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:#1a202c;fo
 </head>
 <body>
 
-<!-- (help-modal, pdf-progress 등 기존 UI 부분은 그대로 유지) -->
+<!-- help-modal, pdf-progress, UI 부분은 이전과 동일 -->
 <div id="help-modal" onclick="if(event.target.id==='help-modal')hideHelp()">
   <div class="help-box" onclick="event.stopImmediatePropagation()">
     <h2>📖 Nemoz Label Generator 사용 방법</h2>
@@ -234,7 +234,7 @@ async function go() {
   }
 }
 
-function parseFullCSV(text) { /* 기존 그대로 */ 
+function parseFullCSV(text) {
   text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
   const rows = []; let row = [], c = '', q = false;
   for (let i = 0; i < text.length; i++) {
@@ -254,13 +254,13 @@ function parseFullCSV(text) { /* 기존 그대로 */
   return rows.map(r => r.map(v => v.trim()));
 }
 
-function cn(s) { /* 기존 그대로 */ 
+function cn(s) {
   if (!s) return null;
   const ns = (s + '').replace(/[^0-9]/g, ' ').trim().split(/\s+/).filter(Boolean).map(Number).filter(n => !isNaN(n));
   return ns.length ? ns[ns.length - 1] : null;
 }
 
-function parseCSV(text) { /* 기존 그대로 (변경 없음) */ 
+function parseCSV(text) {
   const rows = parseFullCSV(text);
   let hi = -1, cA = -1, cB = -1, cNB = -1, cT = -1, cM = -1, cS = -1, cSKU = -1, cJAN = -1;
   for (let i = 0; i < rows.length; i++) {
@@ -334,7 +334,7 @@ function parseCSV(text) { /* 기존 그대로 (변경 없음) */
   return bxs;
 }
 
-function fillInfo(csvText) { /* 기존 그대로 */ 
+function fillInfo(csvText) {
   if (!csvText) return;
   const rows = parseFullCSV(csvText);
   const map = {};
@@ -384,7 +384,7 @@ function render() {
   div.innerHTML = h;
 }
 
-async function doDownloadPDF() { /* 기존 그대로 */ 
+async function doDownloadPDF() {
   if (!boxes.length) return;
   const s = sh();
   const prog = document.getElementById('pdf-progress');
@@ -398,7 +398,7 @@ async function doDownloadPDF() { /* 기존 그대로 */
   wrap.style.cssText = "position:fixed;left:-9999px;top:0;width:378px;height:378px;overflow:hidden;background:#fff;font-family:'Noto Sans JP',sans-serif";
   document.body.appendChild(wrap);
 
-  await document.fonts.load("bold 8pt 'Noto Sans JP'");
+  await document.fonts.load("bold 9.5pt 'Noto Sans JP'");
 
   async function imgToB64(url) {
     const urls = [url, ...PX.map(p => p(url))];
@@ -480,7 +480,7 @@ function lblHTML(b, s) {
   const useSKU = b.single ? (b.sku || s.sku) : (b.rows && b.rows[0] ? b.rows[0].sku || s.sku : s.sku);
   const useJAN = b.single ? (b.jan || s.jan) : (b.rows && b.rows[0] ? b.rows[0].jan || s.jan : s.jan);
 
-  const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:10.8mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
+  const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:9mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
 
   return `<div class="lbl">
   <div class="lh">
@@ -497,11 +497,8 @@ function lblHTML(b, s) {
     <div class="lr"><span class="lk">数量 (予備)</span>${spHtml}</div>
     <div class="lr"><span class="lk">事務所</span><span class="lv">${s.office}</span></div>
     <div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s.name}</span></div>
-    
-    <!-- 🔥 여기만 수정: 시트에 컬럼이 없으면 해당 줄 자체를 출력하지 않음 -->
     ${useSKU.trim() ? `<div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>` : ''}
     ${useJAN.trim() ? `<div class="lr"><span class="lk">バーコード</span><span class="lv">${useJAN}</span></div>` : ''}
-    
     <div class="lr"><span class="lk">原産国</span><span class="lv">${s.origin}</span></div>
   </div>
   <div class="li">${iconImg}</div>
