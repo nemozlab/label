@@ -319,18 +319,21 @@ let boxes = [];
 let commonData = {};
 let commonOrder = [];
 let labelMode = 2; // 2=NORMAL(default), 1=SPECIAL
+let korCommon = {};
 
 function setMode(m) {
   labelMode = m;
   const activeStyle = 'flex:1;padding:12px;border-radius:10px;border:2px solid var(--accent);background:var(--accent);color:#fff;font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.5px';
   const inactiveStyle = 'flex:1;padding:12px;border-radius:10px;border:1.5px solid var(--border);background:#fff;color:var(--text);font-family:\'Barlow Condensed\',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.5px';
-  document.getElementById('mode1').style.cssText = m===1 ? activeStyle : inactiveStyle;
-  document.getElementById('mode2').style.cssText = m===2 ? activeStyle : inactiveStyle;
-  // 소제목 텍스트 색상 명시
-  document.querySelectorAll('#mode1 span, #mode2 span').forEach(span => {
-    const btn = span.closest('button');
-    span.style.color = btn.id === 'mode'+m ? 'rgba(255,255,255,0.85)' : '#718096';
+  [1,2].forEach(id => {
+    const el = document.getElementById('mode'+id);
+    if (el) {
+      el.style.cssText = m===id ? activeStyle : inactiveStyle;
+      const span = el.querySelector('span');
+      if (span) span.style.color = m===id ? 'rgba(255,255,255,0.85)' : '#718096';
+    }
   });
+  if (boxes.length) render();
 }
 
 const safeTrim = v => (v || '').toString().trim();
@@ -351,6 +354,11 @@ const sh = () => {
     { key: '原産国',    id: 'fr' },
   ];
   fixed.forEach(f => {
+    const el = document.getElementById(f.id);
+    if (el) data[f.key] = safeTrim(el.value);
+  });
+  // Korean common fields
+  [{key:'기획사',id:'fk_cmp'},{key:'유통사',id:'fk_dist'},{key:'원산국',id:'fk_origin'}].forEach(f => {
     const el = document.getElementById(f.id);
     if (el) data[f.key] = safeTrim(el.value);
   });
@@ -401,13 +409,16 @@ async function go() {
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       bt = await r.text();
     } else {
-      const r1 = await fc(`https://docs.google.com/spreadsheets/d/${id}/export?format=csv${gid ? `&gid=${gid}` : ''}`);
+      const exportUrl = `https://docs.google.com/spreadsheets/d/${id}/export?format=csv${gid ? `&gid=${gid}` : ''}`;
+      const r1 = await fc(exportUrl);
       if (!r1.ok) throw new Error('시트 읽기 실패');
       bt = await r1.text();
+      // HTML이 반환된 경우 (로그인 페이지 등) 감지
+      if (bt.trimStart().startsWith('<')) throw new Error('시트에 접근할 수 없습니다. 구글 시트 공유 설정을 "링크 있는 모든 사용자 → 뷰어"로 변경해주세요');
     }
 
     boxes = parseCSV(bt);
-    if (!boxes.length) throw new Error('박스 데이터를 찾을 수 없습니다. 헤더에 Type / Total Boxes (또는 Box No / 총수량) 열이 있는지 확인해주세요');
+    if (!boxes.length) throw new Error('박스 데이터를 찾을 수 없습니다. URL에 탭 gid(?gid=...)가 포함되어 있는지, 헤더에 [기획사 / 총 박스수] (한국) 또는 [Type / Total Boxes] (일본) 열이 있는지 확인해주세요');
 
     const parsed = parseCommonInfo(bt);
     commonData = parsed.map;
@@ -452,9 +463,105 @@ function cn(s) {
 
 function parseCSV(text) {
   const rows = parseFullCSV(text);
+  const rK = parseCSV_korean(rows);
+  if (rK.length) return rK;
   const r1 = parseCSV_new(rows);
   if (r1.length) return r1;
   return parseCSV_old(rows);
+}
+
+function parseCSV_korean(rows) {
+  let hi=-1, cA=-1, cPN=-1, cSN=-1, cCMP=-1, cDIST=-1, cBAR=-1, cSKU=-1, cTYPE=-1, cITEM=-1, cQPB=-1, cNB=-1;
+  for (let i=0; i<rows.length; i++) {
+    const r=rows[i];
+    let _cA=-1,_cPN=-1,_cSN=-1,_cCMP=-1,_cDIST=-1,_cBAR=-1,_cSKU=-1,_cTYPE=-1,_cITEM=-1,_cQPB=-1,_cNB=-1;
+    for (let j=0; j<Math.min(r.length,15); j++) {
+      const v=(r[j]||'').trim();
+      if (v==='아티스트') _cA=j;
+      if (v==='제품명') _cPN=j;
+      if (v.includes('제품명')&&v.includes('숏')) _cSN=j;
+      if (v==='기획사') _cCMP=j;
+      if (v==='유통사') _cDIST=j;
+      if (v==='바코드') _cBAR=j;
+      if (v==='품번') _cSKU=j;
+      if (v==='타입'||v==='구분') _cTYPE=j;
+      if (v.includes('아이템')) _cITEM=j;
+      if (v.includes('수량')&&(v.includes('/')||v.includes('Box')||v.includes('box'))) _cQPB=j;
+      if (v.includes('박스수')||v.includes('박스 수')) _cNB=j;
+    }
+    // 기획사 + 총박스수 두 개만 있으면 한국 포맷으로 인정
+    if (_cCMP>-1 && _cNB>-1) {
+      hi=i; cA=_cA; cPN=_cPN; cSN=_cSN; cCMP=_cCMP; cDIST=_cDIST; cBAR=_cBAR; cSKU=_cSKU;
+      cTYPE=_cTYPE; cITEM=_cITEM; cQPB=_cQPB; cNB=_cNB; break;
+    }
+  }
+  if (hi===-1) return [];
+
+  // 데이터 행 수집
+  const dataRows=[];
+  for (let i=hi+1; i<rows.length; i++) {
+    const r=rows[i];
+    if (!r||r.every(c=>!c)) continue;
+    const a=(r[cA]||'').trim();
+    if (!a) continue;
+    dataRows.push({
+      a,
+      pn:  cPN  >-1?(r[cPN] ||'').trim():'',
+      sn:  cSN  >-1?(r[cSN] ||'').trim():'',
+      cmp: cCMP >-1?(r[cCMP]||'').trim():'',
+      dist:cDIST>-1?(r[cDIST]||'').trim():'',
+      bar: cBAR >-1?(r[cBAR]||'').trim():'',
+      sku: cSKU >-1?(r[cSKU]||'').trim():'',
+      type:cTYPE>-1?(r[cTYPE]||'').trim():'',
+      itemQty: cITEM>-1?cn(r[cITEM]):null,
+      qpb:  cQPB>-1?cn(r[cQPB]):null,
+      nb:   cNB >-1?cn(r[cNB]):null,
+    });
+  }
+
+  const bxs=[]; let mixGroup=null;
+
+  const flushMix=()=>{
+    if (!mixGroup||!mixGroup.rows.length) return;
+    const nb=mixGroup.numBoxes||1;
+    for (let k=0;k<nb;k++) {
+      bxs.push({korFmt:true,single:false,boxType:'Mix',count:nb,boxIndex:k+1,
+        a:mixGroup.a,cmp:mixGroup.cmp,dist:mixGroup.dist,qtyPerBox:mixGroup.qtyPerBox,
+        rows:mixGroup.rows.map(r=>({...r}))});
+    }
+    mixGroup=null;
+  };
+
+  for (const row of dataRows) {
+    const isHonip = row.type.includes('혼입')||row.type.toLowerCase().includes('mix');
+    const hasItemQty = row.itemQty!==null && row.itemQty>0;
+    // Single: 아이템수량 없고 수량/Box + 총박스수 있음
+    const isSingle = !hasItemQty && row.qpb!==null && row.nb!==null;
+
+    if (isSingle) {
+      flushMix();
+      const sn = row.sn||row.pn;
+      for (let k=0;k<row.nb;k++) {
+        bxs.push({korFmt:true,single:true,boxType:'Single',boxIndex:k+1,count:row.nb,
+          a:row.a,productName:row.pn,shortName:sn,cmp:row.cmp,dist:row.dist,
+          barcode:row.bar,sku:row.sku,qtyPerBox:row.qpb});
+      }
+    } else {
+      // Mix item
+      if (!mixGroup) mixGroup={a:row.a,cmp:row.cmp,dist:row.dist,qtyPerBox:0,numBoxes:1,rows:[]};
+      if (isHonip||row.qpb) { if(row.qpb) mixGroup.qtyPerBox=row.qpb; if(row.nb) mixGroup.numBoxes=row.nb; }
+      if (hasItemQty) {
+        mixGroup.rows.push({productName:row.pn,shortName:row.sn||row.pn,barcode:row.bar,sku:row.sku,qty:row.itemQty});
+      }
+    }
+  }
+  flushMix();
+
+  if (bxs.length) {
+    const f=bxs[0];
+    korCommon={기획사:f.cmp||'',유통사:f.dist||'',원산국:'MADE IN KOREA'};
+  }
+  return bxs;
 }
 
 function parseCSV_new(rows) {
@@ -651,6 +758,18 @@ function buildCommonUI() {
   const container = document.getElementById('common-fg');
   container.innerHTML = '';
 
+  // 한국 포맷
+  if (boxes.length && boxes[0].korFmt) {
+    [{key:'기획사',id:'fk_cmp',label:'기획사'},{key:'유통사',id:'fk_dist',label:'유통사'},{key:'원산국',id:'fk_origin',label:'원산국'}].forEach(f => {
+      const value = korCommon[f.key] || (f.key==='원산국'?'MADE IN KOREA':'');
+      const div = document.createElement('div');
+      div.className = 'fi';
+      div.innerHTML = `<label>${f.label}</label><input id="${f.id}" type="text" value="${value}" oninput="render()">`;
+      container.appendChild(div);
+    });
+    return;
+  }
+
   const fixed = [
     {key:'상품명', label:'商品名', id:'fn', type:'textarea', rows:3},
     {key:'事務所', label:'事務所', id:'fo', type:'text'},
@@ -716,7 +835,7 @@ function render() {
   let h = '<div class="sg">';
   boxes.forEach(b => {
     h += `<div class="sw">
-      <div class="sn">${b.newFmt ? (b.single ? b.a.split(' - ').pop() : 'MIX') + ' ' + (boxes.indexOf(b)+1) + ' / ' + boxes.length : b.common ? '共通ラベル ' + (boxes.indexOf(b) + 1) + ' / ' + boxes.length : 'BOX ' + String(b.no).padStart(2, '0') + ' / ' + boxes.length}</div>
+      <div class="sn">${b.korFmt ? (b.single ? b.productName.split(' ').slice(-2).join(' ') : 'MIX') + ' ' + (boxes.indexOf(b)+1) + ' / ' + boxes.length : b.newFmt ? (b.single ? b.a.split(' - ').pop() : 'MIX') + ' ' + (boxes.indexOf(b)+1) + ' / ' + boxes.length : b.common ? '共通ラベル ' + (boxes.indexOf(b) + 1) + ' / ' + boxes.length : 'BOX ' + String(b.no).padStart(2, '0') + ' / ' + boxes.length}</div>
       <div class="ss"><div class="si">${lblHTML(b, s)}</div></div>
     </div>`;
   });
@@ -811,6 +930,100 @@ async function doDownloadPDF() {
 function lblHTML(b, s) {
   const isNew = !!b.newFmt;
   const iconImg = `<img src="${ICON_IMG_URL}" alt="shipping icons" style="height:9mm;width:auto;display:block;max-width:90mm;object-fit:contain">`;
+
+  // ── 한국 포맷 ──
+  if (b.korFmt) {
+    const 기획사 = s['기획사'] || b.cmp || '';
+    const 유통사 = s['유통사'] || b.dist || '';
+    const no = String(b.boxIndex).padStart(2,'0');
+    const total = String(b.count).padStart(2,'0');
+    const boxNoSpan = `<span style="font-family:'Barlow Condensed',sans-serif;font-size:22pt;font-weight:900;color:#111;line-height:1;letter-spacing:1pt">${no} / ${total}</span>`;
+
+    if (labelMode === 1) {
+      // SPECIAL: Box No. 강조
+      if (b.single) {
+        return `<div class="lbl">
+  <div class="lh"><span class="lh-t">제품 정보</span><img class="lh-logo" src="https://nemozlab.github.io/label/images/nemoz_logo.png" alt="NEMOZ"></div>
+  <div class="lb">
+    <div class="lr" style="padding-top:1.5mm;align-items:center"><span class="lk">Box No.</span>${boxNoSpan}</div>
+    <div class="lr"><span class="lk">수량/Box</span><span class="lv">${b.qtyPerBox} ea</span></div>
+    <div class="lr"><span class="lk">아티스트</span><span class="lv">${b.a}</span></div>
+    <div class="lr"><span class="lk">제품명</span><span class="lv" style="white-space:pre-line">${b.productName}</span></div>
+    ${b.barcode?`<div class="lr"><span class="lk">바코드</span><span class="lv">${b.barcode}${b.sku?` (품번 ${b.sku})`:''}</span></div>`:''}
+    <div class="lr"><span class="lk">기획사</span><span class="lv">${기획사}</span></div>
+    <div class="lr"><span class="lk">유통사</span><span class="lv">${유통사}</span></div>
+  </div>
+  <div class="li">${iconImg}</div>
+</div>`;
+      } else {
+        const itemRows = b.rows.map(r=>`<div class="qty-row">
+  <span class="qty-art" style="flex:2;font-size:7.5pt;font-weight:400">${r.shortName||r.productName}</span>
+  <span class="qty-val" style="flex:2;font-size:7.5pt;font-weight:400;text-align:left">${r.barcode}</span>
+  <span class="qty-val" style="flex:1.5;font-size:7.5pt;font-weight:400">${r.sku}</span>
+  <span class="qty-val" style="flex:1;font-size:7.5pt;font-weight:400">${r.qty} ea</span>
+</div>`).join('');
+        const albumName = (() => { let p=b.rows[0]?.productName||''; for(const r of b.rows){while(p&&!r.productName.startsWith(p))p=p.slice(0,-1);} return p.trim().replace(/[\s\W]+$/,'').trim(); })();
+        return `<div class="lbl">
+  <div class="lh"><span class="lh-t">제품 정보</span><img class="lh-logo" src="https://nemozlab.github.io/label/images/nemoz_logo.png" alt="NEMOZ"></div>
+  <div class="lb">
+    <div class="lr" style="padding-top:1.5mm;align-items:center"><span class="lk">Box No.</span>${boxNoSpan}</div>
+    <div class="lr"><span class="lk">수량/Box</span><span class="lv">${b.qtyPerBox} ea</span></div>
+    <div class="lr"><span class="lk">아티스트</span><span class="lv">${b.a}</span></div>
+    ${albumName?`<div class="lr"><span class="lk">제품명</span><span class="lv" style="white-space:pre-line">${albumName}</span></div>`:''}
+    <div class="qty-table">
+      <div class="qty-header"><span class="qty-h art" style="flex:2;font-size:7.5pt">제품명</span><span class="qty-h" style="flex:2;font-size:7.5pt;text-align:left">바코드</span><span class="qty-h" style="flex:1.5;font-size:7.5pt">품번</span><span class="qty-h" style="flex:1;font-size:7.5pt">수량</span></div>
+      ${itemRows}
+    </div>
+    <div class="lr"><span class="lk">기획사</span><span class="lv">${기획사}</span></div>
+    <div class="lr"><span class="lk">유통사</span><span class="lv">${유통사}</span></div>
+  </div>
+  <div class="li">${iconImg}</div>
+</div>`;
+      }
+    } else {
+      // NORMAL: 제품명 중심
+      if (b.single) {
+        const lk = `style="min-width:17mm"`;
+        return `<div class="lbl">
+  <div class="lh"><span class="lh-t">제품 정보</span><img class="lh-logo" src="https://nemozlab.github.io/label/images/nemoz_logo.png" alt="NEMOZ"></div>
+  <div class="lb">
+    <div class="lr" style="padding-top:1mm"><span class="lk" ${lk}>아티스트</span><span class="lv">${b.a}</span></div>
+    <div class="lr"><span class="lk" ${lk}>제품명</span><span class="lv" style="white-space:pre-line">${b.productName}</span></div>
+    ${b.barcode?`<div class="lr"><span class="lk" ${lk}>바코드</span><span class="lv">${b.barcode}${b.sku?` (품번 ${b.sku})`:''}</span></div>`:''}
+    <div class="lr"><span class="lk" ${lk}>수량/Box</span><span class="lv">${b.qtyPerBox} ea</span></div>
+    <div class="lr"><span class="lk" ${lk}>총 박스수</span><span class="lv">${no} / ${total}</span></div>
+    <div class="lr"><span class="lk" ${lk}>기획사</span><span class="lv">${기획사}</span></div>
+    <div class="lr"><span class="lk" ${lk}>유통사</span><span class="lv">${유통사}</span></div>
+  </div>
+  <div class="li">${iconImg}</div>
+</div>`;
+      } else {
+        const itemRows = b.rows.map(r=>`<div class="qty-row">
+  <span class="qty-art" style="flex:2;font-size:7.5pt;font-weight:400">${r.shortName||r.productName}</span>
+  <span class="qty-val" style="flex:2;font-size:7.5pt;font-weight:400;text-align:left">${r.barcode}</span>
+  <span class="qty-val" style="flex:1.5;font-size:7.5pt;font-weight:400">${r.sku}</span>
+  <span class="qty-val" style="flex:1;font-size:7.5pt;font-weight:400">${r.qty} ea</span>
+</div>`).join('');
+        const albumName = (() => { let p=b.rows[0]?.productName||''; for(const r of b.rows){while(p&&!r.productName.startsWith(p))p=p.slice(0,-1);} return p.trim().replace(/[\s\W]+$/,'').trim(); })();
+        return `<div class="lbl">
+  <div class="lh"><span class="lh-t">제품 정보</span><img class="lh-logo" src="https://nemozlab.github.io/label/images/nemoz_logo.png" alt="NEMOZ"></div>
+  <div class="lb">
+    <div class="lr" style="padding-top:1mm"><span class="lk">아티스트</span><span class="lv">${b.a}</span></div>
+    ${albumName?`<div class="lr"><span class="lk">제품명</span><span class="lv" style="white-space:pre-line">${albumName}</span></div>`:''}
+    <div class="lr"><span class="lk">수량/Box</span><span class="lv">${b.qtyPerBox} ea</span></div>
+    <div class="lr"><span class="lk">총 박스수</span><span class="lv">${no} / ${total}</span></div>
+    <div class="qty-table">
+      <div class="qty-header"><span class="qty-h art" style="flex:2;font-size:7.5pt">제품명</span><span class="qty-h" style="flex:2;font-size:7.5pt;text-align:left">바코드</span><span class="qty-h" style="flex:1.5;font-size:7.5pt">품번</span><span class="qty-h" style="flex:1;font-size:7.5pt">수량</span></div>
+      ${itemRows}
+    </div>
+    <div class="lr"><span class="lk">기획사</span><span class="lv">${기획사}</span></div>
+    <div class="lr"><span class="lk">유통사</span><span class="lv">${유통사}</span></div>
+  </div>
+  <div class="li">${iconImg}</div>
+</div>`;
+      }
+    }
+  }
 
   if (isNew && labelMode === 1) {
     // 신포맷 데이터 + 박스넘버 강조 디자인
