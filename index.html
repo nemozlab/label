@@ -204,7 +204,7 @@ body{font-family:'Noto Sans KR','Noto Sans JP',sans-serif;background:var(--bg);c
 .lh{display:flex;align-items:center;justify-content:space-between;padding:2.5mm 3.5mm;border-bottom:1pt solid #111;flex-shrink:0}
 .lh-t{font-size:9pt;font-weight:900;color:#111;letter-spacing:.3pt}
 .lh-logo{height:4.5mm;width:auto}
-.lb{flex:1;min-height:0;padding:0 3.5mm;display:flex;flex-direction:column;gap:4.5mm}
+.lb{flex:1;min-height:0;padding:1mm 3.5mm;display:flex;flex-direction:column;justify-content:space-between;gap:0}
 .lr{display:flex;align-items:flex-start;gap:3mm}
 .lk{font-size:9pt;font-weight:700;color:#111;min-width:23.5mm;flex-shrink:0;line-height:1.55}
 .lv{font-size:9pt;font-weight:700;color:#111;line-height:1.5;flex:1;white-space:pre-line}
@@ -700,8 +700,9 @@ function autoFitLabel(lbl) {
   const avail = lbl.offsetHeight - lhH - liH - 2;
   if (lb.scrollHeight > avail && avail > 0) {
     const scale = avail / lb.scrollHeight;
-    lb.style.transform = `scaleY(${scale})`;
+    lb.style.transform = `scale(${scale})`;
     lb.style.transformOrigin = 'top left';
+    lb.style.width = (100 / scale) + '%';
   }
 }
 
@@ -727,7 +728,10 @@ function doPrint() {
   const s = sh();
   const area = document.getElementById('print-area');
   area.innerHTML = boxes.map(b => lblHTML(b, s)).join('');
-  window.print();
+  requestAnimationFrame(() => {
+    area.querySelectorAll('.lbl').forEach(el => autoFitLabel(el));
+    setTimeout(() => window.print(), 100);
+  });
 }
 
 async function doDownloadPDF() {
@@ -823,7 +827,7 @@ function lblHTML(b, s) {
   </div>
   <div class="lb">
     <div class="lr" style="padding-top:1.5mm;align-items:center"><span class="lk">Box No.</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:22pt;font-weight:900;color:#111;line-height:1;letter-spacing:1pt">${no} / ${total}</span></div>
-    <div class="lr"><span class="lk">Qty / Box</span><span class="lv">${b.t} ea</span></div>
+    <div style="display:flex;align-items:center"><div style="flex:2;display:flex;align-items:center;gap:3mm"><span class="lk">Qty / Box</span><span class="lv">${b.t} ea</span></div><div style="flex:1;text-align:center;font-size:8pt;font-weight:400;color:#555;white-space:nowrap"><strong>Box Type</strong>&nbsp;&nbsp;${b.boxType||''}</div></div>
     <div class="qty-table">
       <div class="qty-header"><span class="qty-h art">アーティスト名</span><span class="qty-h">数量</span></div>
       ${qtyRows}
@@ -857,8 +861,7 @@ function lblHTML(b, s) {
   </div>
   <div class="lb">
     <div class="lr" style="padding-top:2mm"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${productName}</span></div>
-    <div class="lr"><span class="lk">Box Type</span><span class="lv">${b.boxType}</span></div>
-    <div class="lr"><span class="lk">Qty / Box</span><span class="lv">${b.t} ea</span></div>
+    <div style="display:flex;align-items:center"><div style="flex:2;display:flex;align-items:center;gap:3mm"><span class="lk">Qty / Box</span><span class="lv">${b.t} ea</span></div><div style="flex:1;text-align:center;font-size:8pt;font-weight:400;color:#555;white-space:nowrap"><strong>Box Type</strong>&nbsp;&nbsp;${b.boxType}</div></div>
     <div class="qty-table">
       <div class="qty-header">
         <span class="qty-h art">アーティスト名</span>
