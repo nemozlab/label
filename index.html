@@ -168,6 +168,7 @@ body{font-family:'Noto Sans KR','Noto Sans JP',sans-serif;background:var(--bg);c
 .sn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
 .ss{box-shadow:0 8px 32px rgba(0,0,0,.06);overflow:hidden;width:378px;height:378px;border-radius:2px}
 .si{width:100mm;height:100mm;transform:scale(1.0);transform-origin:top left}
+
 .empty{text-align:center;padding:52px 20px;color:var(--muted)}
 .ei{font-size:36px;margin-bottom:10px;opacity:.4}
 
@@ -326,6 +327,7 @@ let commonData = {};
 let commonOrder = [];
 let labelMode = 2; // 2=NORMAL(default), 1=SPECIAL
 let korCommon = {};
+let artistColHeader = 'アーティスト名';
 
 function setMode(m) {
   labelMode = m;
@@ -575,10 +577,10 @@ function parseCSV_new(rows) {
     for (let i=0; i<rows.length; i++) {
       const r=rows[i];
       const maxCol=Math.min(r.length,20);
-      let _cA=-1,_cType=-1,_cF=-1,_cG=-1,_cNB=-1,_cSKU=-1,_cJAN=-1,qtyPcsIdx=0;
+      let _cA=-1,_cType=-1,_cF=-1,_cG=-1,_cNB=-1,_cSKU=-1,_cJAN=-1,qtyPcsIdx=0,_cAHeader='';
       for (let j=0; j<maxCol; j++) {
         const v=(r[j]||'').toLowerCase().trim();
-        if ((v.includes('アーティスト')||v.includes('아티스트')||v.includes('artist'))&&_cA===-1) _cA=j;
+        if ((v.includes('アーティスト')||v.includes('バージョン')||v.includes('아티스트')||v.includes('artist'))&&_cA===-1) { _cA=j; _cAHeader=(r[j]||'').trim(); }
         if (v.includes('type')&&v.length<=10) _cType=j;
         // G열: Qty/Box or per 1 box
         if (v.includes('qty')&&(v.includes('/ box')||v.includes('/box')||v.includes('per box')||v.includes('per 1 box'))) _cG=j;
@@ -590,7 +592,9 @@ function parseCSV_new(rows) {
         if ((v.includes('バー코드')||v.includes('jan')||v.includes('barcode'))&&_cJAN===-1) _cJAN=j;
       }
       if (_cType>-1&&_cNB>-1) {
-        hi=i; cA=_cA; cType=_cType; cF=_cF; cG=_cG; cNB=_cNB; cSKU=_cSKU; cJAN=_cJAN; break;
+        hi=i; cA=_cA; cType=_cType; cF=_cF; cG=_cG; cNB=_cNB; cSKU=_cSKU; cJAN=_cJAN;
+        if (_cAHeader) artistColHeader=_cAHeader;
+        break;
       }
     }
 
@@ -651,7 +655,7 @@ function parseCSV_old(rows) {
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
     const maxCol = Math.min(r.length, 15);
-    let _cA=-1,_cB=-1,_cNB=-1,_cT=-1,_cM=-1,_cS=-1,_cSKU=-1,_cJAN=-1;
+    let _cA=-1,_cB=-1,_cNB=-1,_cT=-1,_cM=-1,_cS=-1,_cSKU=-1,_cJAN=-1,_cAHeader='';
     for (let j = 0; j < maxCol; j++) {
       const v = (r[j] || '').toLowerCase().trim();
       if ((v === 'box no' || v.includes('box no')) && !v.includes('of')) _cB = j;
@@ -659,12 +663,13 @@ function parseCSV_old(rows) {
       if (v.includes('총수량') || v.includes('総数量') || (v.includes('qty')&&(v.includes('/ box')||v.includes('/box')))) _cT = j;
       if (v.includes('본품') || v.includes('本品')) _cM = j;
       if (v.includes('예비') || v.includes('予備')) _cS = j;
-      if (v.includes('アーティスト') || v.includes('아티스트') || v.includes('상품명') || v.includes('artist')) _cA = j;
+      if (v.includes('アーティスト') || v.includes('バージョン') || v.includes('아티스트') || v.includes('상품명') || v.includes('artist')) { _cA = j; _cAHeader=(r[j]||'').trim(); }
       if (v.includes('品番') || v.includes('sku')) _cSKU = j;
       if (v.includes('バー코드') || v.includes('jan') || v.includes('barcode')) _cJAN = j;
     }
     if (_cT > -1 && (_cB > -1 || _cNB > -1)) {
       hi = i; cA = _cA; cB = _cB; cNB = _cNB; cT = _cT; cM = _cM; cS = _cS; cSKU = _cSKU; cJAN = _cJAN;
+      if (_cAHeader) artistColHeader=_cAHeader;
       break;
     }
   }
@@ -834,6 +839,21 @@ function autoFitLabel(lbl) {
   }
 }
 
+function fitPreviewToMobile() {
+  const containers = document.querySelectorAll('.ss');
+  const inners = document.querySelectorAll('.si');
+  const vw = window.innerWidth;
+  if (vw < 420) {
+    const size = vw - 40;
+    containers.forEach(el => { el.style.width = size + 'px'; el.style.height = size + 'px'; });
+    inners.forEach(el => { el.style.transform = 'scale(' + (size / 378) + ')'; el.style.transformOrigin = 'top left'; });
+  } else {
+    containers.forEach(el => { el.style.width = ''; el.style.height = ''; });
+    inners.forEach(el => { el.style.transform = ''; });
+  }
+}
+window.addEventListener('resize', () => { if (boxes.length) fitPreviewToMobile(); });
+
 function render() {
   const s = sh();
   const div = document.getElementById('sp');
@@ -848,6 +868,7 @@ function render() {
   div.innerHTML = h;
   requestAnimationFrame(() => {
     div.querySelectorAll('.lbl').forEach(el => autoFitLabel(el));
+    fitPreviewToMobile();
   });
 }
 
@@ -1055,7 +1076,7 @@ function lblHTML(b, s) {
     <div class="lr" style="padding-top:1.5mm;align-items:center"><span class="lk">Box No.</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:22pt;font-weight:900;color:#111;line-height:1;letter-spacing:1pt">${no} / ${total}</span></div>
     <div style="display:flex;align-items:center"><div style="flex:2;display:flex;align-items:center;gap:3mm"><span class="lk">Qty / Box</span><span class="lv">${b.t} ea</span></div><div style="flex:1;text-align:center;font-size:8pt;font-weight:400;color:#555;white-space:nowrap"><strong>Box Type</strong>&nbsp;&nbsp;${b.boxType||''}</div></div>
     <div class="qty-table">
-      <div class="qty-header"><span class="qty-h art">アーティスト名</span><span class="qty-h">数量</span></div>
+      <div class="qty-header"><span class="qty-h art">${artistColHeader}</span><span class="qty-h">数量</span></div>
       ${qtyRows}
     </div>
     ${productName?`<div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${productName}</span></div>`:''}
@@ -1090,7 +1111,7 @@ function lblHTML(b, s) {
     <div style="display:flex;align-items:center"><div style="flex:2;display:flex;align-items:center;gap:3mm"><span class="lk">Qty / Box</span><span class="lv">${b.t} ea</span></div><div style="flex:1;text-align:center;font-size:8pt;font-weight:400;color:#555;white-space:nowrap"><strong>Box Type</strong>&nbsp;&nbsp;${b.boxType}</div></div>
     <div class="qty-table">
       <div class="qty-header">
-        <span class="qty-h art">アーティスト名</span>
+        <span class="qty-h art">${artistColHeader}</span>
         <span class="qty-h">数量</span>
       </div>
       ${artistRows}
@@ -1127,7 +1148,7 @@ function lblHTML(b, s) {
     <div class="lr"><span class="lk">Qty / Box</span>${tHtml}</div>
     <div class="qty-table">
       <div class="qty-header">
-        <span class="qty-h art">アーティスト名</span>
+        <span class="qty-h art">${artistColHeader}</span>
         <span class="qty-h">本品</span>
         <span class="qty-h">予備</span>
       </div>
