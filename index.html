@@ -357,7 +357,7 @@ const sh = () => {
     { key: '事務所',    id: 'fo' },
     { key: '品番',      id: 'fs' },
     { key: 'バー코드', id: 'fj' },
-    { key: '原産국',    id: 'fr' },
+    { key: '原産国',    id: 'fr' },
   ];
   fixed.forEach(f => {
     const el = document.getElementById(f.id);
@@ -728,7 +728,7 @@ function parseCommonInfo(text) {
   const KEY_MAP = [
     { match: v => v.includes('事務所'),                                                   key: '事務所' },
     { match: v => v.includes('상품명') || v.includes('商品名'),                           key: '상품명' },
-    { match: v => v.includes('原産국') || v.includes('원산국'),                           key: '原産국' },
+    { match: v => v.includes('原産国') || v.includes('原産국') || v.includes('원산국'),  key: '原産国' },
     { match: v => v.includes('品番')   || v.includes('SKU'),                             key: '品番' },
     { match: v => v.includes('버코드') || v.includes('JAN') || v.includes('바코드'),  key: '버코드' },
   ];
@@ -781,11 +781,11 @@ function buildCommonUI() {
     {key:'事務所', label:'事務所', id:'fo', type:'text'},
     {key:'品番', label:'品番', id:'fs', type:'text'},
     {key:'버코드', label:'버코드 / JAN', id:'fj', type:'text'},
-    {key:'原産국', label:'原産국', id:'fr', type:'text'}
+    {key:'原産国', label:'原産国', id:'fr', type:'text'}
   ];
 
   fixed.forEach(f => {
-    const value = commonData[f.key] || (f.key === '原産국' ? 'MADE IN KOREA' : '');
+    const value = commonData[f.key] || (f.key === '原産国' ? 'MADE IN KOREA' : '');
     const div = document.createElement('div');
     div.className = f.key === '상품명' ? 'fi full' : 'fi';
     div.innerHTML = `
@@ -798,7 +798,7 @@ function buildCommonUI() {
   });
 
   Object.keys(commonData).forEach(k => {
-    if (['상품명','事務所','品番','버코드','原産국'].includes(k)) return;
+    if (['상품명','事務所','品番','버코드','原産国'].includes(k)) return;
     const div = document.createElement('div');
     div.className = 'fi';
     div.innerHTML = `
@@ -1040,7 +1040,7 @@ function lblHTML(b, s) {
     const total = String(b.count).padStart(2,'0');
     const productName = s['상품명'] || '';
     const office = s['事務所'] || '';
-    const origin = s['原産국'] || 'MADE IN KOREA';
+    const origin = s['原産国'] || 'MADE IN KOREA';
     const useSKU = b.single ? (b.sku||s['品番']||'') : (b.rows&&b.rows[0]?b.rows[0].sku||s['品番']:s['品番']||'');
     const useJAN = b.single ? (b.jan||s['버코드']||'') : (b.rows&&b.rows[0]?b.rows[0].jan||s['버코드']:s['버코드']||'');
     const qtyRows = b.single
@@ -1060,7 +1060,7 @@ function lblHTML(b, s) {
     </div>
     ${productName?`<div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${productName}</span></div>`:''}
     ${office?`<div class="lr"><span class="lk">事務所</span><span class="lv">${office}</span></div>`:''}
-    <div class="lr"><span class="lk">原産국</span><span class="lv">${origin}</span></div>
+    <div class="lr"><span class="lk">原産国</span><span class="lv">${origin}</span></div>
     ${useSKU?`<div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>`:''}
     ${useJAN?`<div class="lr"><span class="lk">버코드</span><span class="lv">${useJAN}</span></div>`:''}
   </div>
@@ -1069,10 +1069,10 @@ function lblHTML(b, s) {
   }
 
   if (isNew) {
-    // ── 新포맷 레이아웃: 商品名 / アーティスト名 / Box Type / QTY / No. of Boxes / 事務所 / 原産국
+    // ── 新포맷 레이아웃: 商品名 / アーティスト名 / Box Type / QTY / No. of Boxes / 事務所 / 原産国
     const productName = s['상품명'] || '';
     const office = s['事務所'] || '';
-    const origin = s['原産국'] || 'MADE IN KOREA';
+    const origin = s['原産国'] || 'MADE IN KOREA';
 
     const artistRows = b.single
       ? `<div class="qty-row"><span class="qty-art">${b.a}</span><span class="qty-val">${b.t} ea</span></div>`
@@ -1097,7 +1097,7 @@ function lblHTML(b, s) {
     </div>
     <div class="lr"><span class="lk">Total Boxes</span><span class="lv">${totalBoxesStr}</span></div>
     ${office ? `<div class="lr"><span class="lk">事務所</span><span class="lv">${office}</span></div>` : ''}
-    <div class="lr"><span class="lk">原産국</span><span class="lv">${origin}</span></div>
+    <div class="lr"><span class="lk">原産国</span><span class="lv">${origin}</span></div>
     ${s['品番']?`<div class="lr"><span class="lk">品番</span><span class="lv">${s['品番']}</span></div>`:''}
     ${s['버코드']?`<div class="lr"><span class="lk">버코드</span><span class="lv">${s['버코드']}</span></div>`:''}
   </div>
@@ -1133,12 +1133,12 @@ function lblHTML(b, s) {
       </div>
       ${qtyRows}
     </div>
-    ${(commonOrder.length > 0 ? commonOrder : ['상품명','事務所','品番','버코드','原産국']).map(k => {
+    ${(commonOrder.length > 0 ? commonOrder : ['상품명','事務所','品番','버코드','原産国']).map(k => {
       if (k === '事務所')     return `<div class="lr"><span class="lk">事務所</span><span class="lv">${s['事務所'] || ''}</span></div>`;
       if (k === '상품명')     return `<div class="lr"><span class="lk">商品名</span><span class="lv" style="white-space:pre-line">${s['상품명'] || ''}</span></div>`;
       if (k === '品番')       return useSKU ? `<div class="lr"><span class="lk">品番</span><span class="lv">${useSKU}</span></div>` : '';
       if (k === '버코드')  return useJAN ? `<div class="lr"><span class="lk">버코드</span><span class="lv">${useJAN}</span></div>` : '';
-      if (k === '原産국')     return `<div class="lr"><span class="lk">原産국</span><span class="lv">${s['原産국'] || 'MADE IN KOREA'}</span></div>`;
+      if (k === '原産国')     return `<div class="lr"><span class="lk">原産国</span><span class="lv">${s['原産国'] || 'MADE IN KOREA'}</span></div>`;
       return '';
     }).join('')}
   </div>
